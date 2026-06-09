@@ -1,0 +1,135 @@
+{
+  "name": "tibia_analytics_data_ingestion",
+  "email_notifications": {
+    "no_alert_for_skipped_runs": false
+  },
+  "webhook_notifications": {},
+  "timeout_seconds": 0,
+  "max_concurrent_runs": 1,
+  "performance_target": "PERFORMANCE_OPTIMIZED",
+  "tasks": [
+    {
+      "task_key": "ingestion_api_worlds",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/ingestion/api/worlds",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "bronze_worlds_load_table",
+      "depends_on": [{"task_key": "ingestion_api_worlds"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/bronze/worlds/load_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "ingestion_api_highscores",
+      "depends_on": [{"task_key": "bronze_worlds_load_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/ingestion/api/highscores",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "bronze_highscores_load_table",
+      "depends_on": [{"task_key": "ingestion_api_highscores"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/bronze/highscores/load_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "ingestion_api_characters",
+      "depends_on": [{"task_key": "bronze_highscores_load_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/ingestion/api/characters",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "bronze_characters_load_table",
+      "depends_on": [{"task_key": "ingestion_api_characters"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/bronze/characters/load_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_characters_load_history_table",
+      "depends_on": [{"task_key": "bronze_characters_load_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/silver/characters/load_history_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_characters_load_summary_table",
+      "depends_on": [{"task_key": "bronze_characters_load_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/silver/characters/load_summary_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_characters_orchestrate_table",
+      "depends_on": [
+        {"task_key": "silver_characters_load_summary_table"},
+        {"task_key": "silver_characters_load_history_table"}
+      ],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/silver/characters/orchestrate_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "gold_characters_load_table",
+      "depends_on": [{"task_key": "silver_characters_orchestrate_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/gold/characters/load_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_highscores_load_table",
+      "depends_on": [{"task_key": "bronze_highscores_load_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/silver/highscores/load_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_worlds_load_table",
+      "depends_on": [{"task_key": "bronze_worlds_load_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/silver/worlds/load_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "gold_worlds_orchestrate_table",
+      "depends_on": [{"task_key": "silver_worlds_load_table"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/gold/worlds/orchestrate_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    }
+  ],
+  "queue": {
+    "enabled": true
+  },
+  "format": "MULTI_TASK"
+}

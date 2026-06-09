@@ -1,0 +1,44 @@
+{
+  "name": "tibia_analytics",
+  "email_notifications": {
+    "no_alert_for_skipped_runs": false
+  },
+  "webhook_notifications": {},
+  "timeout_seconds": 0,
+  "max_concurrent_runs": 1,
+  "performance_target": "PERFORMANCE_OPTIMIZED",
+  "tasks": [
+    {
+      "task_key": "schema_bootstrap",
+      "run_job_task": {
+        "job_id": 430508694537298
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {}
+    },
+    {
+      "task_key": "data_ingestion",
+      "depends_on": [
+        {
+          "task_key": "schema_bootstrap"
+        }
+      ],
+      "run_job_task": {
+        "job_id": 153885383567000
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {}
+    }
+  ],
+  "schedule": {
+    "quartz_cron_expression": "22 0 9 * * ?",
+    "timezone_id": "UTC",
+    "pause_status": "UNPAUSED"
+  },
+  "queue": {
+    "enabled": true
+  },
+  "format": "MULTI_TASK"
+}

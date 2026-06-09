@@ -1,0 +1,155 @@
+{
+  "name": "tibia_analytics_schema_bootstrap",
+  "description": "Tibia ETL pipeline: ingest and process player data for community analysis",
+  "email_notifications": {
+    "no_alert_for_skipped_runs": true,
+    "on_failure": ["vitor.fehelberg@gmail.com"]
+  },
+  "notification_settings": {
+    "no_alert_for_canceled_runs": true,
+    "no_alert_for_skipped_runs": true
+  },
+  "webhook_notifications": {},
+  "timeout_seconds": 0,
+  "max_concurrent_runs": 1,
+  "performance_target": "PERFORMANCE_OPTIMIZED",
+  "tasks": [
+    {
+      "task_key": "config_bootstrap",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/config/bootstrap",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "bronze_characters_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/bronze/characters/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "bronze_highscores_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/bronze/highscores/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "bronze_worlds_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/bronze/worlds/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "config_api_client",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/config/api_client",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "gold_characters_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/gold/characters/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "gold_cohort_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/gold/cohort/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "gold_worlds_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/gold/worlds/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_characters_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/silver/characters/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_worlds_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/silver/worlds/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "utils_create_table",
+      "depends_on": [{"task_key": "config_bootstrap"}],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/utils/create_table",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "utils_calendar_seeded_check",
+      "depends_on": [{"task_key": "utils_create_table"}],
+      "sql_task": {
+        "query": {
+          "query_id": "d0fc306b-8da8-44e8-a399-29f678617a3c"
+        },
+        "warehouse_id": "57bf884cfac78763"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "is_utils_calendar_seeded",
+      "depends_on": [{"task_key": "utils_calendar_seeded_check"}],
+      "condition_task": {
+        "left": "{{tasks.utils_calendar_seeded_check.output.first_row.calendar_seeded}}",
+        "op": "EQUAL_TO",
+        "right": "TRUE"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "utils_calendar_seed",
+      "depends_on": [
+        {
+          "task_key": "is_utils_calendar_seeded",
+          "outcome": "false"
+        }
+      ],
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/tibia_analytics/utils/calendar_seed",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0
+    }
+  ],
+  "queue": {
+    "enabled": true
+  },
+  "format": "MULTI_TASK"
+}
