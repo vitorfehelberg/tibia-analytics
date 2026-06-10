@@ -6,14 +6,7 @@ WITH base AS (
          world_id,
          account_status,
          sex,
-         CASE
-           WHEN vocation LIKE '%Druid%'    THEN 'Druid'
-           WHEN vocation LIKE '%Knight%'   THEN 'Knight'
-           WHEN vocation LIKE '%Monk%'     THEN 'Monk'
-           WHEN vocation LIKE '%Paladin%'  THEN 'Paladin'
-           WHEN vocation LIKE '%Sorcerer%' THEN 'Sorcerer'
-           ELSE vocation
-         END AS vocation,
+         vocation,
          is_active_30d,
          is_active_90d,
          LAG(is_active_30d) OVER (PARTITION BY character_id, granularity ORDER BY period_start) AS prev_is_active_30d,
