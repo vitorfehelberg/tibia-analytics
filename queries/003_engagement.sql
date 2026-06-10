@@ -9,14 +9,7 @@ WITH base AS (
          world_id,
          account_status,
          sex,
-         CASE
-           WHEN vocation LIKE '%Druid%'    THEN 'Druid'
-           WHEN vocation LIKE '%Knight%'   THEN 'Knight'
-           WHEN vocation LIKE '%Monk%'     THEN 'Monk'
-           WHEN vocation LIKE '%Paladin%'  THEN 'Paladin'
-           WHEN vocation LIKE '%Sorcerer%' THEN 'Sorcerer'
-           ELSE vocation
-         END AS vocation,
+         vocation,
          level,
          level_delta_period,
          level_delta_short,

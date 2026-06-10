@@ -1,11 +1,6 @@
 SELECT DISTINCT
        CASE
-         WHEN vocation LIKE '%Druid%'    THEN 'Druid'
-         WHEN vocation LIKE '%Knight%'   THEN 'Knight'
-         WHEN vocation LIKE '%Monk%'     THEN 'Monk'
-         WHEN vocation LIKE '%Paladin%'  THEN 'Paladin'
-         WHEN vocation LIKE '%Sorcerer%' THEN 'Sorcerer'
-         WHEN vocation IS NULL           THEN 'No Vocation'
+         WHEN vocation IS NULL THEN 'No Vocation'
          ELSE vocation
        END AS vocation
   FROM characters_behavior_periodic
