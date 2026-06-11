@@ -9,7 +9,7 @@
     "no_alert_for_skipped_runs": true,
     "no_alert_for_canceled_runs": true
   },
-  "timeout_seconds": 0,
+  "timeout_seconds": 7200,
   "max_concurrent_runs": 1,
   "performance_target": "PERFORMANCE_OPTIMIZED",
   "tasks": [
