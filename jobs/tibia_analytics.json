@@ -1,9 +1,14 @@
 {
   "name": "tibia_analytics",
   "email_notifications": {
-    "no_alert_for_skipped_runs": false
+    "no_alert_for_skipped_runs": true,
+    "on_failure": ["<REPLACE_WITH_YOUR_EMAIL>"]
   },
   "webhook_notifications": {},
+  "notification_settings": {
+    "no_alert_for_skipped_runs": true,
+    "no_alert_for_canceled_runs": true
+  },
   "timeout_seconds": 0,
   "max_concurrent_runs": 1,
   "performance_target": "PERFORMANCE_OPTIMIZED",

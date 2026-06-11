@@ -48,9 +48,10 @@ Before running the orchestrator, replace the following placeholders in `jobs/tib
 
 | Placeholder                              | Where to find it                                                           |
 |------------------------------------------|----------------------------------------------------------------------------|
+| `<REPLACE_WITH_YOUR_EMAIL>`              | Email address used for job failure notifications                           |
 | `<REPLACE_WITH_SCHEMA_BOOTSTRAP_JOB_ID>` | Job ID returned after creating the schema bootstrap job                    |
 | `<REPLACE_WITH_DATA_INGESTION_JOB_ID>`   | Job ID returned after creating the data ingestion job                      |
-| `<REPLACE_WITH_QUERY_ID>`                | SQL query ID (visible in the SQL Editor URL under `queries/...`) |
+| `<REPLACE_WITH_QUERY_ID>`                | SQL query ID (visible in the SQL Editor URL under `queries/...`)           |
 | `<REPLACE_WITH_WAREHOUSE_ID>`            | SQL Warehouse ID (found in the warehouse connection details)               |
 
 ## Data Pipeline Architecture
