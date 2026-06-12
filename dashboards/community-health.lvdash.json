@@ -377,6 +377,144 @@
       }
     },
     {
+      "name": "b024de6d",
+      "displayName": "cohort_retention",
+      "config": {
+        "version": "1.1",
+        "source": "tibia_analytics.gold.cohort_retention",
+        "dimensions": [
+          {
+            "name": "granularity",
+            "expr": "source.granularity",
+            "comment": "Temporal aggregation level used to define cohorts and retention windows. Supported values include Day, Week, Month, and Quarter.",
+            "displayName": "Granularity"
+          },
+          {
+            "name": "cohort_period",
+            "expr": "source.cohort_period",
+            "comment": "Start date of the cohort period in which the player first qualified for inclusion in the cohort.",
+            "displayName": "Cohort Period"
+          },
+          {
+            "name": "cohort_period_status",
+            "expr": "source.cohort_period_status",
+            "comment": "Data completeness status of the cohort period. Supported values include full, partial_start, partial_current, and partial_missing.",
+            "displayName": "Cohort Period Status"
+          },
+          {
+            "name": "cohort_is_partial_period",
+            "expr": "source.cohort_is_partial_period",
+            "comment": "Indicates whether the cohort period has incomplete snapshot coverage relative to the expected number of days for the selected granularity.",
+            "displayName": "Cohort Is Partial Period"
+          },
+          {
+            "name": "observation_period",
+            "expr": "source.observation_period",
+            "comment": "Start date of the observation period used to measure retention for the cohort.",
+            "displayName": "Observation Period"
+          },
+          {
+            "name": "observation_period_status",
+            "expr": "source.observation_period_status",
+            "comment": "Data completeness status of the observation period. Supported values include full, partial_start, partial_current, and partial_missing.",
+            "displayName": "Observation Period Status"
+          },
+          {
+            "name": "observation_is_partial_period",
+            "expr": "source.observation_is_partial_period",
+            "comment": "Indicates whether the observation period has incomplete snapshot coverage relative to the expected number of days for the selected granularity.",
+            "displayName": "Observation Is Partial Period"
+          },
+          {
+            "name": "periods_elapsed",
+            "expr": "source.periods_elapsed",
+            "comment": "Number of elapsed periods between the cohort_period and the observation_period according to the selected granularity. Example: for Month granularity, value 1 represents the first month after cohort acquisition.",
+            "displayName": "Periods Elapsed"
+          },
+          {
+            "name": "world_id",
+            "expr": "source.world_id",
+            "comment": "Stable unique identifier of the Tibia world associated with the player during the observation period.",
+            "displayName": "World Id"
+          },
+          {
+            "name": "account_status",
+            "expr": "source.account_status",
+            "comment": "Indicates whether the player account was Free or Premium during the observation period.",
+            "displayName": "Account Status"
+          },
+          {
+            "name": "sex",
+            "expr": "source.sex",
+            "comment": "Current sex of the character during the observation period.",
+            "displayName": "Sex"
+          },
+          {
+            "name": "vocation",
+            "expr": "source.vocation",
+            "comment": "Normalized vocation category of the character during the observation period. Promotions are grouped into their base vocation categories.",
+            "displayName": "Vocation"
+          },
+          {
+            "name": "in_guild",
+            "expr": "source.in_guild",
+            "comment": "Indicates whether the character belonged to a guild during the observation period.",
+            "displayName": "In Guild"
+          },
+          {
+            "name": "owns_house",
+            "expr": "source.owns_house",
+            "comment": "Indicates whether the character owned at least one house during the observation period.",
+            "displayName": "Owns House"
+          },
+          {
+            "name": "is_married",
+            "expr": "source.is_married",
+            "comment": "Indicates whether the character was married during the observation period.",
+            "displayName": "Is Married"
+          },
+          {
+            "name": "loyalty_title",
+            "expr": "source.loyalty_title",
+            "comment": "Loyalty title associated with the character account during the observation period.",
+            "displayName": "Loyalty Title"
+          },
+          {
+            "name": "cohort_size",
+            "expr": "source.cohort_size",
+            "comment": "Total number of distinct characters included in the original cohort for the specified segmentation dimensions.",
+            "displayName": "Cohort Size"
+          },
+          {
+            "name": "retained_count",
+            "expr": "source.retained_count",
+            "comment": "Number of distinct cohort characters that remained active in the corresponding observation_period.",
+            "displayName": "Retained Count"
+          },
+          {
+            "name": "retention_rate",
+            "expr": "source.retention_rate",
+            "comment": "Retention ratio calculated as retained_count divided by cohort_size. Formula: retained_count / cohort_size.",
+            "displayName": "Retention Rate"
+          },
+          {
+            "name": "processed_at",
+            "expr": "source.processed_at",
+            "comment": "Timestamp when the record was processed into the Gold layer (UTC).",
+            "displayName": "Processed At"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
       "name": "c7d57975",
       "displayName": "worlds",
       "config": {
@@ -522,7 +660,7 @@
         "   INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
-        "     AND base.period_status NOT IN ('partial_start', 'partial_missing')\n",
+        "     AND base.period_status != 'partial_start'\n",
         "     AND (:p_world_name IS NULL\n",
         "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
@@ -858,7 +996,7 @@
         "   INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
-        "     AND base.period_status NOT IN ('partial_start', 'partial_missing')\n",
+        "     AND base.period_status != 'partial_start'\n",
         "     AND (:p_world_name IS NULL\n",
         "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
@@ -1231,7 +1369,7 @@
         "   INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
-        "     AND base.period_status NOT IN ('partial_start', 'partial_missing')\n",
+        "     AND base.period_status != 'partial_start'\n",
         "     AND (:p_world_name IS NULL\n",
         "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
@@ -1589,7 +1727,7 @@
         "   INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
-        "     AND base.period_status NOT IN ('partial_start', 'partial_missing')\n",
+        "     AND base.period_status != 'partial_start'\n",
         "     AND (:p_world_name IS NULL\n",
         "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
@@ -1875,8 +2013,8 @@
         "    ON worlds.world_id = cr.world_id\n",
         " WHERE cr.granularity          = 'Month'\n",
         "   AND cr.cohort_period BETWEEN :date_range.min AND :date_range.max\n",
-        "   AND cr.cohort_period_status = 'full'\n",
-        "   AND cr.observation_period_status = 'full'\n",
+        "   AND cr.cohort_period_status IN ('full', 'partial_missing')\n",
+        "   AND cr.observation_period_status IN ('full', 'partial_missing')\n",
         "   AND (:p_world_name IS NULL\n",
         "         OR ARRAY_SIZE(:p_world_name) = 0 \n",
         "         OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
@@ -2159,7 +2297,7 @@
         "       CASE :p_cohort_dimension\n",
         "         WHEN 'account_status' THEN cr.account_status\n",
         "         WHEN 'vocation'       THEN cr.vocation\n",
-        "         WHEN 'world_name'     THEN worlds.world_name\n",
+        "         WHEN 'world'          THEN worlds.world_name\n",
         "         WHEN 'in_guild'       THEN CASE WHEN cr.in_guild   THEN 'Yes' ELSE 'No' END\n",
         "         WHEN 'owns_house'     THEN CASE WHEN cr.owns_house THEN 'Yes' ELSE 'No' END\n",
         "         WHEN 'is_married'     THEN CASE WHEN cr.is_married THEN 'Yes' ELSE 'No' END\n",
@@ -2169,12 +2307,12 @@
         "       SUM(cr.retained_count)                                            AS retained_count,\n",
         "       ROUND(SUM(cr.retained_count) / NULLIF(SUM(cr.cohort_size), 0), 4) AS retention_rate\n",
         "  FROM tibia_analytics.gold.cohort_retention AS cr\n",
-        " INNER JOIN tibia_analytics.gold.worlds As worlds\n",
+        " INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
         "    ON worlds.world_id = cr.world_id\n",
         " WHERE cr.granularity          = 'Month'\n",
         "   AND cr.cohort_period BETWEEN :date_range.min AND :date_range.max\n",
-        "   AND cr.cohort_period_status = 'full'\n",
-        "   AND cr.observation_period_status = 'full'\n",
+        "   AND cr.cohort_period_status IN ('full', 'partial_missing')\n",
+        "   AND cr.observation_period_status IN ('full', 'partial_missing')\n",
         "   AND (:p_world_name IS NULL\n",
         "         OR ARRAY_SIZE(:p_world_name) = 0 \n",
         "         OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
@@ -2493,7 +2631,7 @@
         "   INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
-        "     AND base.period_status NOT IN ('partial_start', 'partial_missing')\n",
+        "     AND base.period_status != 'partial_start'\n",
         "     AND (:p_world_name IS NULL\n",
         "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
@@ -3616,6 +3754,23 @@
         "       character_id\n",
         "  FROM tibia_analytics.gold.characters_behavior_periodic\n",
         " ORDER BY character_id"
+      ]
+    },
+    {
+      "name": "ef723f81",
+      "displayName": "param_cohort_dimension",
+      "queryLines": [
+        "SELECT 'account_status' AS cohort_dimension\n",
+        " UNION ALL\n",
+        "SELECT 'vocation'\n",
+        " UNION ALL\n",
+        "SELECT 'world'\n",
+        " UNION ALL\n",
+        "SELECT 'in_guild'\n",
+        " UNION ALL\n",
+        "SELECT 'owns_house'\n",
+        " UNION ALL\n",
+        "SELECT 'is_married'"
       ]
     }
   ],
@@ -7233,7 +7388,7 @@
             "name": "9b920106",
             "multilineTextboxSpec": {
               "lines": [
-                "This page analyzes how effectively the community retains players over time. It tracks player persistence, churn dynamics, and long-term retention patterns across successive cohorts.<br>**Note**: Cohort views use full-period data for accuracy. KPI views include partial periods for trend continuity."
+                "This page analyzes how effectively the community retains players over time. It tracks player persistence, churn dynamics, and long-term retention patterns across successive cohorts."
               ],
               "verticalAlign": "VERTICAL_ALIGN_CENTER"
             }
@@ -7352,7 +7507,8 @@
                   "fieldName": "periods_elapsed",
                   "axis": {
                     "hideTitle": true,
-                    "hideGrid": true
+                    "hideGrid": true,
+                    "hideLabels": false
                   },
                   "displayName": "Periods Elapsed",
                   "scale": {
@@ -7363,7 +7519,8 @@
                   "fieldName": "cohort_period",
                   "axis": {
                     "hideGrid": true,
-                    "hideTitle": true
+                    "hideTitle": true,
+                    "hideLabels": false
                   },
                   "displayName": "Cohort Period",
                   "scale": {
@@ -7393,14 +7550,17 @@
                   }
                 },
                 "label": {
-                  "show": false
+                  "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
           "position": {
             "x": 0,
-            "y": 11,
+            "y": 12,
             "width": 6,
             "height": 8
           }
@@ -7448,7 +7608,8 @@
                     "hideTitle": true
                   },
                   "scale": {
-                    "type": "quantitative"
+                    "type": "quantitative",
+                    "reverse": false
                   }
                 },
                 "y": {
@@ -7521,12 +7682,15 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
           "position": {
             "x": 6,
-            "y": 11,
+            "y": 12,
             "width": 6,
             "height": 8
           }
@@ -7536,7 +7700,24 @@
             "name": "afb47437",
             "queries": [
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_cohort_dimension",
+                "name": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16689259b1098b6c96218aa2830f7_cohort_dimension",
+                "query": {
+                  "datasetName": "ef723f81",
+                  "fields": [
+                    {
+                      "name": "cohort_dimension",
+                      "expression": "`cohort_dimension`"
+                    },
+                    {
+                      "name": "cohort_dimension_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319589e49678559f5ab66_p_cohort_dimension",
                 "query": {
                   "datasetName": "394ae852",
                   "parameters": [
@@ -7552,64 +7733,28 @@
             "spec": {
               "version": 2,
               "frame": {
-                "showTitle": true
+                "showTitle": true,
+                "title": "Dimension"
               },
               "widgetType": "filter-single-select",
               "encodings": {
                 "fields": [
                   {
                     "parameterName": "p_cohort_dimension",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_cohort_dimension"
-                  }
-                ]
-              }
-            }
-          },
-          "position": {
-            "x": 8,
-            "y": 10,
-            "width": 2,
-            "height": 1
-          }
-        },
-        {
-          "widget": {
-            "name": "bc45f7a9",
-            "queries": [
-              {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_world_ids",
-                "query": {
-                  "datasetName": "394ae852",
-                  "parameters": [
-                    {
-                      "name": "p_world_ids",
-                      "keyword": "p_world_ids"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true
-              },
-              "widgetType": "filter-single-select",
-              "encodings": {
-                "fields": [
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319589e49678559f5ab66_p_cohort_dimension"
+                  },
                   {
-                    "parameterName": "p_world_ids",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_world_ids"
+                    "fieldName": "cohort_dimension",
+                    "queryName": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16689259b1098b6c96218aa2830f7_cohort_dimension"
                   }
                 ]
               }
             }
           },
           "position": {
-            "x": 10,
-            "y": 10,
-            "width": 2,
+            "x": 9,
+            "y": 11,
+            "width": 3,
             "height": 1
           }
         },
@@ -7625,7 +7770,7 @@
           "position": {
             "x": 0,
             "y": 10,
-            "width": 8,
+            "width": 12,
             "height": 1
           }
         },
@@ -8225,6 +8370,22 @@
             "y": 4,
             "width": 6,
             "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "22a4c722",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Characters are grouped by the period in which they first entered the dataset. Retention shows the share of those characters that remained active in subsequent periods."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 9,
+            "height": 1
           }
         }
       ],
@@ -12380,7 +12541,7 @@
             "name": "world1",
             "queries": [
               {
-                "name": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15a04efde1a7d8d7a55b775baed36_world_name",
+                "name": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933196ea7649a43c51abf3a_world_name",
                 "query": {
                   "datasetName": "c2003027",
                   "fields": [
@@ -12397,7 +12558,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f153c93d5215c49c76631cf3e84de0_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319479026f3cc88531672_p_world_name",
                 "query": {
                   "datasetName": "c542b912",
                   "parameters": [
@@ -12410,7 +12571,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15483017d11bfb69cf445cdbc6bb1_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933194aa81f2061e16f68ae_p_world_name",
                 "query": {
                   "datasetName": "a871f39b",
                   "parameters": [
@@ -12423,7 +12584,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1548c5eea1db8b3ca3cdf2e83382b_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933194e9331cbe7066bedd7_p_world_name",
                 "query": {
                   "datasetName": "f23c4b74",
                   "parameters": [
@@ -12436,7 +12597,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154a8840c10d3b7a821f88f1ab4dd_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933195198f55992abba879c_p_world_name",
                 "query": {
                   "datasetName": "6c27d41a",
                   "parameters": [
@@ -12449,7 +12610,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f144a1c40b1fef95a346a58e4682d9_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f629331955a411e2850ef2ecee_p_world_name",
                 "query": {
                   "datasetName": "8da057bf",
                   "parameters": [
@@ -12462,7 +12623,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319589e49678559f5ab66_p_world_name",
                 "query": {
                   "datasetName": "394ae852",
                   "parameters": [
@@ -12475,7 +12636,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154d1da3f13b0ba6a3919bd1e178f_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933195c8b2a7c705beb5cc0_p_world_name",
                 "query": {
                   "datasetName": "9e051a46",
                   "parameters": [
@@ -12488,7 +12649,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1554e9a731f1cb0ce6bd93c523913_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933195f936f7e157640673f_p_world_name",
                 "query": {
                   "datasetName": "d3918c8b",
                   "parameters": [
@@ -12501,7 +12662,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1592fa7f91062b2e634ca48b25c60_p_world_name",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319668f29ec92101083f8_p_world_name",
                 "query": {
                   "datasetName": "90da3db5",
                   "parameters": [
@@ -12518,50 +12679,50 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "World\nWorld"
+                "title": "World"
               },
               "widgetType": "filter-multi-select",
               "encodings": {
                 "fields": [
                   {
                     "fieldName": "world_name",
-                    "queryName": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15a04efde1a7d8d7a55b775baed36_world_name"
+                    "queryName": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933196ea7649a43c51abf3a_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f153c93d5215c49c76631cf3e84de0_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319479026f3cc88531672_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15483017d11bfb69cf445cdbc6bb1_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933194aa81f2061e16f68ae_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1548c5eea1db8b3ca3cdf2e83382b_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933194e9331cbe7066bedd7_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154a8840c10d3b7a821f88f1ab4dd_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933195198f55992abba879c_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f144a1c40b1fef95a346a58e4682d9_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f629331955a411e2850ef2ecee_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319589e49678559f5ab66_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154d1da3f13b0ba6a3919bd1e178f_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933195c8b2a7c705beb5cc0_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1554e9a731f1cb0ce6bd93c523913_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f62933195f936f7e157640673f_p_world_name"
                   },
                   {
                     "parameterName": "p_world_name",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1592fa7f91062b2e634ca48b25c60_p_world_name"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f165f6293319668f29ec92101083f8_p_world_name"
                   }
                 ]
               }
