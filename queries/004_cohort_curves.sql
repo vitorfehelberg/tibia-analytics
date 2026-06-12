@@ -2,7 +2,7 @@ SELECT cr.periods_elapsed,
        CASE :p_cohort_dimension
          WHEN 'account_status' THEN cr.account_status
          WHEN 'vocation'       THEN cr.vocation
-         WHEN 'world_name'     THEN worlds.world_name
+         WHEN 'world'          THEN worlds.world_name
          WHEN 'in_guild'       THEN CASE WHEN cr.in_guild   THEN 'Yes' ELSE 'No' END
          WHEN 'owns_house'     THEN CASE WHEN cr.owns_house THEN 'Yes' ELSE 'No' END
          WHEN 'is_married'     THEN CASE WHEN cr.is_married THEN 'Yes' ELSE 'No' END
@@ -12,12 +12,12 @@ SELECT cr.periods_elapsed,
        SUM(cr.retained_count)                                            AS retained_count,
        ROUND(SUM(cr.retained_count) / NULLIF(SUM(cr.cohort_size), 0), 4) AS retention_rate
   FROM tibia_analytics.gold.cohort_retention AS cr
- INNER JOIN tibia_analytics.gold.worlds As worlds
+ INNER JOIN tibia_analytics.gold.worlds AS worlds
     ON worlds.world_id = cr.world_id
  WHERE cr.granularity          = 'Month'
    AND cr.cohort_period BETWEEN :date_range.min AND :date_range.max
-   AND cr.cohort_period_status = 'full'
-   AND cr.observation_period_status = 'full'
+   AND cr.cohort_period_status IN ('full', 'partial_missing')
+   AND cr.observation_period_status IN ('full', 'partial_missing')
    AND (:p_world_name IS NULL
          OR ARRAY_SIZE(:p_world_name) = 0 
          OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))

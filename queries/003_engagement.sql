@@ -53,7 +53,7 @@ filtered AS (
    INNER JOIN tibia_analytics.gold.worlds AS worlds
       ON worlds.world_id = base.world_id
    WHERE base.period_start BETWEEN :date_range.min AND :date_range.max
-     AND base.period_status NOT IN ('partial_start', 'partial_missing')
+     AND base.period_status != 'partial_start'
      AND (:p_world_name IS NULL
            OR ARRAY_SIZE(:p_world_name) = 0 
            OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))
