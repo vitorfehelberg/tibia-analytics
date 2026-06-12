@@ -8,8 +8,8 @@ SELECT cr.cohort_period,
     ON worlds.world_id = cr.world_id
  WHERE cr.granularity          = 'Month'
    AND cr.cohort_period BETWEEN :date_range.min AND :date_range.max
-   AND cr.cohort_period_status = 'full'
-   AND cr.observation_period_status = 'full'
+   AND cr.cohort_period_status IN ('full', 'partial_missing')
+   AND cr.observation_period_status IN ('full', 'partial_missing')
    AND (:p_world_name IS NULL
          OR ARRAY_SIZE(:p_world_name) = 0 
          OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))
