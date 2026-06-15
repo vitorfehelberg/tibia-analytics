@@ -101,15 +101,6 @@
       "timeout_seconds": 0
     },
     {
-      "task_key": "silver_highscores_load_table",
-      "depends_on": [{"task_key": "bronze_highscores_load_table"}],
-      "notebook_task": {
-        "notebook_path": "notebooks/silver/highscores/load_table",
-        "source": "GIT"
-      },
-      "timeout_seconds": 0
-    },
-    {
       "task_key": "silver_worlds_load_table",
       "depends_on": [{"task_key": "bronze_worlds_load_table"}],
       "notebook_task": {
