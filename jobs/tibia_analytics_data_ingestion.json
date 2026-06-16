@@ -71,18 +71,8 @@
       "timeout_seconds": 0
     },
     {
-      "task_key": "silver_characters_load_summary_table",
-      "depends_on": [{"task_key": "bronze_characters_load_table"}],
-      "notebook_task": {
-        "notebook_path": "notebooks/silver/characters/load_summary_table",
-        "source": "GIT"
-      },
-      "timeout_seconds": 0
-    },
-    {
       "task_key": "silver_characters_orchestrate_table",
       "depends_on": [
-        {"task_key": "silver_characters_load_summary_table"},
         {"task_key": "silver_characters_load_history_table"}
       ],
       "notebook_task": {
