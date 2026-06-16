@@ -623,6 +623,228 @@
       }
     },
     {
+      "name": "a01ffe74",
+      "displayName": "calendar",
+      "config": {
+        "version": "1.1",
+        "source": "tibia_analytics.utils.calendar",
+        "dimensions": [
+          {
+            "name": "date_key",
+            "expr": "source.date_key",
+            "comment": "Unique identifier for the calendar date in YYYYMMDD format.",
+            "displayName": "Date Key"
+          },
+          {
+            "name": "year_key",
+            "expr": "source.year_key",
+            "comment": "Calendar year identifier.",
+            "displayName": "Year Key"
+          },
+          {
+            "name": "quarter_key",
+            "expr": "source.quarter_key",
+            "comment": "Calendar quarter identifier in YYYYQQ format.",
+            "displayName": "Quarter Key"
+          },
+          {
+            "name": "month_key",
+            "expr": "source.month_key",
+            "comment": "Calendar month identifier in YYYYMM format.",
+            "displayName": "Month Key"
+          },
+          {
+            "name": "week_key",
+            "expr": "source.week_key",
+            "comment": "Calendar week identifier based on week start date.",
+            "displayName": "Week Key"
+          },
+          {
+            "name": "full_date",
+            "expr": "source.full_date",
+            "comment": "Calendar date.",
+            "displayName": "Full Date"
+          },
+          {
+            "name": "year",
+            "expr": "source.year",
+            "comment": "Calendar year.",
+            "displayName": "Year"
+          },
+          {
+            "name": "quarter",
+            "expr": "source.quarter",
+            "comment": "Calendar quarter number (1-4).",
+            "displayName": "Quarter"
+          },
+          {
+            "name": "quarter_name",
+            "expr": "source.quarter_name",
+            "comment": "Quarter label (Q1-Q4).",
+            "displayName": "Quarter Name"
+          },
+          {
+            "name": "quarter_year",
+            "expr": "source.quarter_year",
+            "comment": "Quarter and year label.",
+            "displayName": "Quarter Year"
+          },
+          {
+            "name": "quarter_start_date",
+            "expr": "source.quarter_start_date",
+            "comment": "First day of the quarter.",
+            "displayName": "Quarter Start Date"
+          },
+          {
+            "name": "quarter_end_date",
+            "expr": "source.quarter_end_date",
+            "comment": "Last day of the quarter.",
+            "displayName": "Quarter End Date"
+          },
+          {
+            "name": "month",
+            "expr": "source.month",
+            "comment": "Calendar month number (1-12).",
+            "displayName": "Month"
+          },
+          {
+            "name": "month_name",
+            "expr": "source.month_name",
+            "comment": "Full month name.",
+            "displayName": "Month Name"
+          },
+          {
+            "name": "month_short_name",
+            "expr": "source.month_short_name",
+            "comment": "Abbreviated month name.",
+            "displayName": "Month Short Name"
+          },
+          {
+            "name": "month_year_short",
+            "expr": "source.month_year_short",
+            "comment": "Short month and year label.",
+            "displayName": "Month Year Short"
+          },
+          {
+            "name": "month_start_date",
+            "expr": "source.month_start_date",
+            "comment": "First day of the month.",
+            "displayName": "Month Start Date"
+          },
+          {
+            "name": "month_end_date",
+            "expr": "source.month_end_date",
+            "comment": "Last day of the month.",
+            "displayName": "Month End Date"
+          },
+          {
+            "name": "days_in_month",
+            "expr": "source.days_in_month",
+            "comment": "Number of days in the month.",
+            "displayName": "Days In Month"
+          },
+          {
+            "name": "iso_week",
+            "expr": "source.iso_week",
+            "comment": "ISO week number.",
+            "displayName": "Iso Week"
+          },
+          {
+            "name": "iso_year",
+            "expr": "source.iso_year",
+            "comment": "ISO week-based year.",
+            "displayName": "Iso Year"
+          },
+          {
+            "name": "iso_year_week",
+            "expr": "source.iso_year_week",
+            "comment": "ISO year-week identifier.",
+            "displayName": "Iso Year Week"
+          },
+          {
+            "name": "week_start_date",
+            "expr": "source.week_start_date",
+            "comment": "First day of the week.",
+            "displayName": "Week Start Date"
+          },
+          {
+            "name": "week_end_date",
+            "expr": "source.week_end_date",
+            "comment": "Last day of the week.",
+            "displayName": "Week End Date"
+          },
+          {
+            "name": "day",
+            "expr": "source.day",
+            "comment": "Day of month.",
+            "displayName": "Day"
+          },
+          {
+            "name": "day_of_year",
+            "expr": "source.day_of_year",
+            "comment": "Day number within the year.",
+            "displayName": "Day Of Year"
+          },
+          {
+            "name": "day_of_week_iso",
+            "expr": "source.day_of_week_iso",
+            "comment": "ISO day of week where Monday=1 and Sunday=7.",
+            "displayName": "Day Of Week Iso"
+          },
+          {
+            "name": "day_name",
+            "expr": "source.day_name",
+            "comment": "Full weekday name.",
+            "displayName": "Day Name"
+          },
+          {
+            "name": "day_short_name",
+            "expr": "source.day_short_name",
+            "comment": "Abbreviated weekday name.",
+            "displayName": "Day Short Name"
+          },
+          {
+            "name": "is_first_day_of_month",
+            "expr": "source.is_first_day_of_month",
+            "comment": "Indicates whether the date is the first day of the month.",
+            "displayName": "Is First Day Of Month"
+          },
+          {
+            "name": "is_last_day_of_month",
+            "expr": "source.is_last_day_of_month",
+            "comment": "Indicates whether the date is the last day of the month.",
+            "displayName": "Is Last Day Of Month"
+          },
+          {
+            "name": "is_weekday",
+            "expr": "source.is_weekday",
+            "comment": "Indicates whether the date falls on a weekday.",
+            "displayName": "Is Weekday"
+          },
+          {
+            "name": "is_weekend",
+            "expr": "source.is_weekend",
+            "comment": "Indicates whether the date falls on a weekend.",
+            "displayName": "Is Weekend"
+          },
+          {
+            "name": "processed_at",
+            "expr": "source.processed_at",
+            "comment": "Timestamp when the record was processed into the Utils layer (UTC).",
+            "displayName": "Processed At"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
       "name": "c542b912",
       "displayName": "001_overview",
       "queryLines": [
