@@ -100,8 +100,17 @@
       "timeout_seconds": 0
     },
     {
-      "task_key": "gold_worlds_orchestrate_table",
+      "task_key": "data_quality_silver_worlds",
       "depends_on": [{"task_key": "silver_worlds_load_table"}],
+      "notebook_task": {
+        "notebook_path": "notebooks/data_quality/silver_worlds",
+        "source": "GIT"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "gold_worlds_orchestrate_table",
+      "depends_on": [{"task_key": "data_quality_silver_worlds"}],
       "notebook_task": {
         "notebook_path": "notebooks/gold/worlds/orchestrate_table",
         "source": "GIT"
