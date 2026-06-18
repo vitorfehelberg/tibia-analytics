@@ -94,7 +94,7 @@ Provides analytical datasets used by the dashboard and other analytical workload
 
 ## Dataset Scale
 
-### Overview
+### Summary
 
 | Metric                    | Value       |
 |---------------------------|-------------|
