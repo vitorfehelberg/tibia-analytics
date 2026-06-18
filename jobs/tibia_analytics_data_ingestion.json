@@ -62,8 +62,17 @@
       "timeout_seconds": 0
     },
     {
-      "task_key": "silver_characters_load_history_table",
+      "task_key": "data_quality_bronze_characters",
       "depends_on": [{"task_key": "bronze_characters_load_table"}],
+      "notebook_task": {
+        "notebook_path": "notebooks/data_quality/bronze_characters",
+        "source": "GIT"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "silver_characters_load_history_table",
+      "depends_on": [{"task_key": "data_quality_bronze_characters"}],
       "notebook_task": {
         "notebook_path": "notebooks/silver/characters/load_history_table",
         "source": "GIT"
@@ -82,8 +91,17 @@
       "timeout_seconds": 0
     },
     {
-      "task_key": "gold_characters_load_table",
+      "task_key": "data_quality_silver_characters",
       "depends_on": [{"task_key": "silver_characters_orchestrate_table"}],
+      "notebook_task": {
+        "notebook_path": "notebooks/data_quality/silver_characters",
+        "source": "GIT"
+      },
+      "timeout_seconds": 0
+    },
+    {
+      "task_key": "gold_characters_load_table",
+      "depends_on": [{"task_key": "data_quality_silver_characters"}],
       "notebook_task": {
         "notebook_path": "notebooks/gold/characters/load_table",
         "source": "GIT"
