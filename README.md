@@ -18,10 +18,14 @@ Data engineering project focused on building a historical analytics platform to 
   - [Analytical Modeling](#analytical-modeling)
   - [Platform and Tooling](#platform-and-tooling)
 - [Dashboard](#dashboard)
+  - [Overview](#overview-1)
+  - [Retention](#retention)
+  - [Long-Term Health](#long-term-health)
 - [Data Quality](#data-quality)
 - [Deployment](#deployment)
 - [Current Limitations](#current-limitations)
 - [Future Improvements](#future-improvements)
+- [License](#license)
 
 ## Overview 
 
@@ -105,7 +109,7 @@ _**¹** ~60 minutes are spent on character ingestion, constrained by a rate limi
 
 ## Design Decisions
 
-### Data Model
+### Data Modeling
 
 #### Character Identity Resolution
 
