@@ -192,39 +192,39 @@ The Community Health dashboard provides a pre-built analytical view over the Gol
 
 ### Overview
 
-Tracks active population size across all monitored worlds over time, with activity breakdowns by 7-day, 30-day, and 90-day windows and period-over-period change indicators.
+Provides a snapshot of current community activity and population trends, including active players, growth, retention, and lifecycle composition.
 
 <p align="center">
   <img
     src="assets/dashboard_community_health_overview.png"
-    alt="Dashboard showing community size, activity, and trend indicators."
-    title="Overview Dashboard"
+    alt="Community Health dashboard overview showing player population, activity, retention, lifecycle composition, and growth trends."
+    title="Community Health Dashboard - Overview"
     width="1200"
   />
 </p>
 
 ### Retention
 
-Shows cohort-based retention rates across multiple time granularities (weekly, monthly, quarterly), allowing comparison of retention patterns across different cohorts at equivalent observation windows.
+Analyzes player retention patterns through lifecycle metrics and cohort analysis, allowing comparison of how different groups of players remain active over time.
 
 <p align="center">
   <img
     src="assets/dashboard_community_health_retention.png"
-    alt="Dashboard showing cohort retention rates across multiple time granularities."
-    title="Retention Dashboard"
+    alt="Community Health dashboard retention section showing retention and churn trends, cohort retention heatmap, and retention decay curves."
+    title="Community Health Dashboard - Retention"
     width="1200"
   />
 </p>
 
 ### Long-Term Health
 
-Surfaces longitudinal indicators — new character arrivals, churn rates, and reactivation trends — to evaluate long-term health trends across worlds.
+Evaluates broader community evolution by combining population growth, retention, churn, and replacement indicators to identify whether worlds are expanding, stabilizing, or declining.
 
 <p align="center">
   <img
     src="assets/dashboard_community_health_long_term_health.png"
-    alt="Dashboard showing long-term community health and population trends."
-    title="Long-Term Health Dashboard"
+    alt="Community Health dashboard long-term health section showing growth, retention, churn, and replacement trends over time."
+    title="Community Health Dashboard - Long-Term Health"
     width="1200"
   />
 </p>
