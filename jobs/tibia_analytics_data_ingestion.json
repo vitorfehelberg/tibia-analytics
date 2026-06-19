@@ -109,6 +109,15 @@
       "timeout_seconds": 0
     },
     {
+      "task_key": "gold_cohort_load_table",
+      "depends_on": [{"task_key": "gold_characters_load_table"}],
+      "notebook_task": {
+        "notebook_path": "notebooks/gold/cohort/load_table",
+        "source": "GIT"
+      },
+      "timeout_seconds": 0
+    },
+    {
       "task_key": "silver_worlds_load_table",
       "depends_on": [{"task_key": "bronze_worlds_load_table"}],
       "notebook_task": {
