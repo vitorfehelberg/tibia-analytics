@@ -3871,10 +3871,7 @@
       "displayName": "param_vocation",
       "queryLines": [
         "SELECT DISTINCT\n",
-        "       CASE\n",
-        "         WHEN vocation IS NULL THEN 'No Vocation'\n",
-        "         ELSE vocation\n",
-        "       END AS vocation\n",
+        "       vocation\n",
         "  FROM characters_behavior_periodic\n",
         " ORDER BY CASE\n",
         "            WHEN vocation = 'No Vocation' THEN 0\n",
@@ -3929,25 +3926,23 @@
       "displayName": "param_loyalty_title",
       "queryLines": [
         "SELECT DISTINCT\n",
-        "       CASE\n",
-        "         WHEN loyalty_title IS NULL THEN 'No Title'\n",
-        "         ELSE loyalty_title\n",
-        "       END AS loyalty_title\n",
+        "       loyalty_title\n",
         "  FROM tibia_analytics.gold.characters_behavior_periodic\n",
-        " ORDER BY CASE \n",
-        "            WHEN loyalty_title = 'No Title' THEN 0\n",
-        "            WHEN loyalty_title = 'Scout of Tibia' THEN 1\n",
-        "            WHEN loyalty_title = 'Sentinel of Tibia' THEN 2\n",
-        "            WHEN loyalty_title = 'Steward of Tibia' THEN 3\n",
-        "            WHEN loyalty_title = 'Warden of Tibia' THEN 4\n",
-        "            WHEN loyalty_title = 'Squire of Tibia' THEN 5\n",
-        "            WHEN loyalty_title = 'Warrior of Tibia' THEN 6\n",
-        "            WHEN loyalty_title = 'Keeper of Tibia' THEN 7\n",
-        "            WHEN loyalty_title = 'Guardian of Tibia' THEN 8\n",
-        "            WHEN loyalty_title = 'Sage of Tibia' THEN 9\n",
-        "            WHEN loyalty_title = 'Savant of Tibia' THEN 10\n",
-        "            WHEN loyalty_title = 'Enlightened of Tibia' THEN 11\n",
-        "            ELSE 1\n",
+        " ORDER BY CASE\n",
+        "            WHEN loyalty_title = 'Not Informed'         THEN 0 \n",
+        "            WHEN loyalty_title = 'No Loyalty Title'     THEN 1\n",
+        "            WHEN loyalty_title = 'Scout of Tibia'       THEN 2\n",
+        "            WHEN loyalty_title = 'Sentinel of Tibia'    THEN 3\n",
+        "            WHEN loyalty_title = 'Steward of Tibia'     THEN 4\n",
+        "            WHEN loyalty_title = 'Warden of Tibia'      THEN 5\n",
+        "            WHEN loyalty_title = 'Squire of Tibia'      THEN 6\n",
+        "            WHEN loyalty_title = 'Warrior of Tibia'     THEN 7\n",
+        "            WHEN loyalty_title = 'Keeper of Tibia'      THEN 8\n",
+        "            WHEN loyalty_title = 'Guardian of Tibia'    THEN 9\n",
+        "            WHEN loyalty_title = 'Sage of Tibia'        THEN 10\n",
+        "            WHEN loyalty_title = 'Savant of Tibia'      THEN 11\n",
+        "            WHEN loyalty_title = 'Enlightened of Tibia' THEN 12\n",
+        "            ELSE 13\n",
         "          END, \n",
         "          loyalty_title"
       ]
@@ -12183,7 +12178,7 @@
             "name": "1e7519c4",
             "queries": [
               {
-                "name": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15a03a5e51b7295a7a6cef4e05cb6_loyalty_title",
+                "name": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1e309016a1cccea4186b_loyalty_title",
                 "query": {
                   "datasetName": "ccc6e67d",
                   "fields": [
@@ -12200,7 +12195,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f153c93d5215c49c76631cf3e84de0_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1d9eb3b43d79291e8bf1_p_loyalty_title",
                 "query": {
                   "datasetName": "c542b912",
                   "parameters": [
@@ -12213,7 +12208,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15483017d11bfb69cf445cdbc6bb1_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1da396dfad21716e74f5_p_loyalty_title",
                 "query": {
                   "datasetName": "a871f39b",
                   "parameters": [
@@ -12226,7 +12221,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1548c5eea1db8b3ca3cdf2e83382b_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1da997c9fdade4d273c3_p_loyalty_title",
                 "query": {
                   "datasetName": "f23c4b74",
                   "parameters": [
@@ -12239,7 +12234,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154a8840c10d3b7a821f88f1ab4dd_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1daeb3434e0f7a09aeea_p_loyalty_title",
                 "query": {
                   "datasetName": "6c27d41a",
                   "parameters": [
@@ -12252,7 +12247,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f144a1c40b1fef95a346a58e4682d9_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1db3bcbf0e519c26a20f_p_loyalty_title",
                 "query": {
                   "datasetName": "8da057bf",
                   "parameters": [
@@ -12265,7 +12260,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1db9b24d41c298c983d2_p_loyalty_title",
                 "query": {
                   "datasetName": "394ae852",
                   "parameters": [
@@ -12278,7 +12273,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154d1da3f13b0ba6a3919bd1e178f_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1dbe8e4d5427947304ca_p_loyalty_title",
                 "query": {
                   "datasetName": "9e051a46",
                   "parameters": [
@@ -12291,7 +12286,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1554e9a731f1cb0ce6bd93c523913_p_loyalty_title",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1dc38bc1325741949cf1_p_loyalty_title",
                 "query": {
                   "datasetName": "d3918c8b",
                   "parameters": [
@@ -12315,17 +12310,18 @@
                 "sort": {
                   "by": "custom-order",
                   "orderedValues": [
-                    "No Title",
-                    "Guardian of Tibia",
-                    "Keeper of Tibia",
-                    "Sage of Tibia",
-                    "Savant of Tibia",
+                    "Not Informed",
+                    "No Loyalty Title",
                     "Scout of Tibia",
                     "Sentinel of Tibia",
-                    "Squire of Tibia",
                     "Steward of Tibia",
                     "Warden of Tibia",
+                    "Squire of Tibia",
                     "Warrior of Tibia",
+                    "Keeper of Tibia",
+                    "Guardian of Tibia",
+                    "Sage of Tibia",
+                    "Savant of Tibia",
                     "Enlightened of Tibia"
                   ]
                 }
@@ -12335,39 +12331,39 @@
                 "fields": [
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f153c93d5215c49c76631cf3e84de0_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1d9eb3b43d79291e8bf1_p_loyalty_title"
                   },
                   {
                     "fieldName": "loyalty_title",
-                    "queryName": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15a03a5e51b7295a7a6cef4e05cb6_loyalty_title"
+                    "queryName": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1e309016a1cccea4186b_loyalty_title"
                   },
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15483017d11bfb69cf445cdbc6bb1_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1da396dfad21716e74f5_p_loyalty_title"
                   },
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1548c5eea1db8b3ca3cdf2e83382b_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1da997c9fdade4d273c3_p_loyalty_title"
                   },
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154a8840c10d3b7a821f88f1ab4dd_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1daeb3434e0f7a09aeea_p_loyalty_title"
                   },
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f144a1c40b1fef95a346a58e4682d9_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1db3bcbf0e519c26a20f_p_loyalty_title"
                   },
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1db9b24d41c298c983d2_p_loyalty_title"
                   },
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154d1da3f13b0ba6a3919bd1e178f_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1dbe8e4d5427947304ca_p_loyalty_title"
                   },
                   {
                     "parameterName": "p_loyalty_title",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1554e9a731f1cb0ce6bd93c523913_p_loyalty_title"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f16b9e2ece1dc38bc1325741949cf1_p_loyalty_title"
                   }
                 ]
               }
