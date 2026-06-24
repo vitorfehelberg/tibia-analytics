@@ -883,61 +883,52 @@
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
         "     AND base.period_status != 'partial_start'\n",
-        "     AND (:p_world_name IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "     AND (:p_location IS NULL\n",
-        "           OR ARRAY_SIZE(:p_location) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "     AND (:p_pvp_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "     AND (:p_premium_only = 'All'\n",
-        "           OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "           OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "     AND (:p_transfer_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "           OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "           OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "     AND (:p_battleye_protected = 'All'\n",
-        "           OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "           OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "     AND (:p_world_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "           OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "           OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "     AND (:p_is_active = 'All'\n",
-        "           OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "           OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "     AND (:p_account_status = 'All'\n",
+        "           OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "           OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "     AND (:p_account_status  = 'All'\n",
         "           OR :p_account_status = base.account_status)\n",
         "     AND (:p_sex = 'All'\n",
         "           OR :p_sex = base.sex)\n",
-        "     AND (:p_vocation IS NULL\n",
-        "           OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation)\n",
-        "           OR (base.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "     AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation))\n",
         "     AND (:p_in_guild = 'All'\n",
-        "           OR (:p_in_guild   = 'Yes' AND base.in_guild   = TRUE)\n",
-        "           OR (:p_in_guild   = 'No'  AND base.in_guild   = FALSE))\n",
+        "           OR (:p_in_guild   = 'Yes' AND base.in_guild    = TRUE)\n",
+        "           OR (:p_in_guild   = 'No'  AND base.in_guild    = FALSE))\n",
         "     AND (:p_owns_house = 'All'\n",
-        "           OR (:p_owns_house = 'Yes' AND base.owns_house = TRUE)\n",
-        "           OR (:p_owns_house = 'No'  AND base.owns_house = FALSE))\n",
+        "           OR (:p_owns_house = 'Yes' AND base.owns_house  = TRUE)\n",
+        "           OR (:p_owns_house = 'No'  AND base.owns_house  = FALSE))\n",
         "     AND (:p_is_married = 'All'\n",
-        "           OR (:p_is_married = 'Yes' AND base.is_married = TRUE)\n",
-        "           OR (:p_is_married = 'No'  AND base.is_married = FALSE))\n",
-        "     AND (:p_loyalty_title IS NULL\n",
-        "           OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title)\n",
-        "           OR (base.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "           OR (:p_is_married = 'Yes' AND base.is_married  = TRUE)\n",
+        "           OR (:p_is_married = 'No'  AND base.is_married  = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title))\n",
         "),\n",
         "period_agg AS (\n",
         "  SELECT period_start,\n",
         "         period_end,\n",
         "         COUNT(DISTINCT character_id) AS observed_total,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'new'              THEN character_id END) AS players_new,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'returning'        THEN character_id END) AS players_returning,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'active'           THEN character_id END) AS players_active,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'dormant'          THEN character_id END) AS players_dormant,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'churned'          THEN character_id END) AS players_churned,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'new'              THEN character_id END) AS characters_new,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'returning'        THEN character_id END) AS characters_returning,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'active'           THEN character_id END) AS characters_active,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'dormant'          THEN character_id END) AS characters_dormant,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'churned'          THEN character_id END) AS characters_churned,\n",
         "         COUNT(DISTINCT CASE WHEN lifecycle_event = 'new'              THEN character_id END) AS ev_new,\n",
         "         COUNT(DISTINCT CASE WHEN lifecycle_event = 'returning'        THEN character_id END) AS ev_returning,\n",
         "         COUNT(DISTINCT CASE WHEN lifecycle_event = 'dormant'          THEN character_id END) AS ev_dormant,\n",
@@ -952,16 +943,16 @@
         "SELECT period_start,\n",
         "       period_end,\n",
         "       observed_total,\n",
-        "       ROUND(players_new       / observed_total, 6)                              AS new_player_rate,\n",
-        "       ROUND(players_returning / observed_total, 6)                              AS returning_player_rate,\n",
-        "       ROUND(players_active    / observed_total, 6)                              AS active_player_rate,\n",
-        "       ROUND(players_dormant   / observed_total, 6)                              AS dormant_player_rate,\n",
-        "       ROUND(players_churned   / observed_total, 6)                              AS churned_player_rate,\n",
+        "       ROUND(characters_new       / observed_total, 6)                           AS new_character_rate,\n",
+        "       ROUND(characters_returning / observed_total, 6)                           AS returning_character_rate,\n",
+        "       ROUND(characters_active    / observed_total, 6)                           AS active_character_rate,\n",
+        "       ROUND(characters_dormant   / observed_total, 6)                           AS dormant_character_rate,\n",
+        "       ROUND(characters_churned   / observed_total, 6)                           AS churned_character_rate,\n",
         "       ROUND(active_30d / observed_total, 6)                                     AS activity_rate_30d,\n",
         "       ROUND(retained_7d / NULLIF(prev_active_7d, 0), 6)                         AS retention_rate_7d,\n",
         "       (ev_new + ev_returning)                                                   AS inflow,\n",
         "       -ev_churned                                                               AS outflow,\n",
-        "       (ev_new + ev_returning - ev_churned)                                      AS net_player_growth,\n",
+        "       (ev_new + ev_returning - ev_churned)                                      AS net_character_growth,\n",
         "       ROUND((ev_new + ev_returning) / observed_total, 6)                        AS inflow_rate,\n",
         "       ROUND(-ev_churned / observed_total, 6)                                    AS outflow_rate,\n",
         "       ROUND((ev_new + ev_returning - ev_churned) / observed_total, 6)           AS growth_rate,\n",
@@ -993,8 +984,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1004,8 +1000,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1015,8 +1016,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1041,8 +1047,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1067,8 +1078,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1123,8 +1139,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1179,8 +1200,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -1219,61 +1245,52 @@
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
         "     AND base.period_status != 'partial_start'\n",
-        "     AND (:p_world_name IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "     AND (:p_location IS NULL\n",
-        "           OR ARRAY_SIZE(:p_location) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "     AND (:p_pvp_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "     AND (:p_premium_only = 'All'\n",
-        "           OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "           OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "     AND (:p_transfer_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "           OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "           OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "     AND (:p_battleye_protected = 'All'\n",
-        "           OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "           OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "     AND (:p_world_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "           OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "           OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "     AND (:p_is_active = 'All'\n",
-        "           OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "           OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "     AND (:p_account_status = 'All'\n",
+        "           OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "           OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "     AND (:p_account_status  = 'All'\n",
         "           OR :p_account_status = base.account_status)\n",
         "     AND (:p_sex = 'All'\n",
         "           OR :p_sex = base.sex)\n",
-        "     AND (:p_vocation IS NULL\n",
-        "           OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation)\n",
-        "           OR (base.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "     AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation))\n",
         "     AND (:p_in_guild = 'All'\n",
-        "           OR (:p_in_guild   = 'Yes' AND base.in_guild   = TRUE)\n",
-        "           OR (:p_in_guild   = 'No'  AND base.in_guild   = FALSE))\n",
+        "           OR (:p_in_guild   = 'Yes' AND base.in_guild    = TRUE)\n",
+        "           OR (:p_in_guild   = 'No'  AND base.in_guild    = FALSE))\n",
         "     AND (:p_owns_house = 'All'\n",
-        "           OR (:p_owns_house = 'Yes' AND base.owns_house = TRUE)\n",
-        "           OR (:p_owns_house = 'No'  AND base.owns_house = FALSE))\n",
+        "           OR (:p_owns_house = 'Yes' AND base.owns_house  = TRUE)\n",
+        "           OR (:p_owns_house = 'No'  AND base.owns_house  = FALSE))\n",
         "     AND (:p_is_married = 'All'\n",
-        "           OR (:p_is_married = 'Yes' AND base.is_married = TRUE)\n",
-        "           OR (:p_is_married = 'No'  AND base.is_married = FALSE))\n",
-        "     AND (:p_loyalty_title IS NULL\n",
-        "           OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title)\n",
-        "           OR (base.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "           OR (:p_is_married = 'Yes' AND base.is_married  = TRUE)\n",
+        "           OR (:p_is_married = 'No'  AND base.is_married  = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title))\n",
         "),\n",
         "period_agg AS (\n",
         "  SELECT period_start,\n",
         "         period_end,\n",
         "         COUNT(DISTINCT character_id)                                                         AS observed_total,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'new'              THEN character_id END) AS players_new,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'returning'        THEN character_id END) AS players_returning,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'active'           THEN character_id END) AS players_active,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'dormant'          THEN character_id END) AS players_dormant,\n",
-        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'churned'          THEN character_id END) AS players_churned,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'new'              THEN character_id END) AS characters_new,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'returning'        THEN character_id END) AS characters_returning,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'active'           THEN character_id END) AS characters_active,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'dormant'          THEN character_id END) AS characters_dormant,\n",
+        "         COUNT(DISTINCT CASE WHEN lifecycle_stage = 'churned'          THEN character_id END) AS characters_churned,\n",
         "         COUNT(DISTINCT CASE WHEN lifecycle_event = 'new'              THEN character_id END) AS ev_new,\n",
         "         COUNT(DISTINCT CASE WHEN lifecycle_event = 'returning'        THEN character_id END) AS ev_returning,\n",
         "         COUNT(DISTINCT CASE WHEN lifecycle_event = 'dormant'          THEN character_id END) AS ev_dormant,\n",
@@ -1285,16 +1302,16 @@
         "SELECT period_start,\n",
         "       period_end,\n",
         "       observed_total,\n",
-        "       players_new,\n",
-        "       players_returning,\n",
-        "       players_active,\n",
-        "       players_dormant,\n",
-        "       players_churned,\n",
-        "       ROUND(players_new       / observed_total, 6)                              AS new_player_rate,\n",
-        "       ROUND(players_returning / observed_total, 6)                              AS returning_player_rate,\n",
-        "       ROUND(players_active    / observed_total, 6)                              AS active_player_rate,\n",
-        "       ROUND(players_dormant   / observed_total, 6)                              AS dormant_player_rate,\n",
-        "       ROUND(players_churned   / observed_total, 6)                              AS churned_player_rate,\n",
+        "       characters_new,\n",
+        "       characters_returning,\n",
+        "       characters_active,\n",
+        "       characters_dormant,\n",
+        "       characters_churned,\n",
+        "       ROUND(characters_new       / observed_total, 6)                           AS new_character_rate,\n",
+        "       ROUND(characters_returning / observed_total, 6)                           AS returning_character_rate,\n",
+        "       ROUND(characters_active    / observed_total, 6)                           AS active_character_rate,\n",
+        "       ROUND(characters_dormant   / observed_total, 6)                           AS dormant_character_rate,\n",
+        "       ROUND(characters_churned   / observed_total, 6)                           AS churned_character_rate,\n",
         "       ev_new, \n",
         "       ev_returning, \n",
         "       ev_dormant, \n",
@@ -1305,7 +1322,7 @@
         "       ROUND(ev_churned   / observed_total, 6)                                   AS churned_event_rate,\n",
         "       (ev_new + ev_returning)                                                   AS inflow,\n",
         "       -ev_churned                                                               AS outflow,\n",
-        "       (ev_new + ev_returning - ev_churned)                                      AS net_player_growth,\n",
+        "       (ev_new + ev_returning - ev_churned)                                      AS net_character_growth,\n",
         "       ROUND((ev_new + ev_returning) / observed_total, 6)                        AS inflow_rate,\n",
         "       ROUND(-ev_churned / observed_total, 6)                                    AS outflow_rate,\n",
         "       ROUND((ev_new + ev_returning - ev_churned) / observed_total, 6)           AS growth_rate,\n",
@@ -1339,8 +1356,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1350,8 +1372,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1361,8 +1388,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1387,8 +1419,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1413,8 +1450,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1469,8 +1511,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1525,8 +1572,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -1592,51 +1644,42 @@
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
         "     AND base.period_status != 'partial_start'\n",
-        "     AND (:p_world_name IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "     AND (:p_location IS NULL\n",
-        "           OR ARRAY_SIZE(:p_location) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "     AND (:p_pvp_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "     AND (:p_premium_only = 'All'\n",
-        "           OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "           OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "     AND (:p_transfer_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "           OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "           OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "     AND (:p_battleye_protected = 'All'\n",
-        "           OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "           OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "     AND (:p_world_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "           OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "           OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "     AND (:p_is_active = 'All'\n",
-        "           OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "           OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "     AND (:p_account_status = 'All'\n",
+        "           OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "           OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "     AND (:p_account_status  = 'All'\n",
         "           OR :p_account_status = base.account_status)\n",
         "     AND (:p_sex = 'All'\n",
         "           OR :p_sex = base.sex)\n",
-        "     AND (:p_vocation IS NULL\n",
-        "           OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation)\n",
-        "           OR (base.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "     AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation))\n",
         "     AND (:p_in_guild = 'All'\n",
-        "           OR (:p_in_guild   = 'Yes' AND base.in_guild   = TRUE)\n",
-        "           OR (:p_in_guild   = 'No'  AND base.in_guild   = FALSE))\n",
+        "           OR (:p_in_guild   = 'Yes' AND base.in_guild    = TRUE)\n",
+        "           OR (:p_in_guild   = 'No'  AND base.in_guild    = FALSE))\n",
         "     AND (:p_owns_house = 'All'\n",
-        "           OR (:p_owns_house = 'Yes' AND base.owns_house = TRUE)\n",
-        "           OR (:p_owns_house = 'No'  AND base.owns_house = FALSE))\n",
+        "           OR (:p_owns_house = 'Yes' AND base.owns_house  = TRUE)\n",
+        "           OR (:p_owns_house = 'No'  AND base.owns_house  = FALSE))\n",
         "     AND (:p_is_married = 'All'\n",
-        "           OR (:p_is_married = 'Yes' AND base.is_married = TRUE)\n",
-        "           OR (:p_is_married = 'No'  AND base.is_married = FALSE))\n",
-        "     AND (:p_loyalty_title IS NULL\n",
-        "           OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title)\n",
-        "           OR (base.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "           OR (:p_is_married = 'Yes' AND base.is_married  = TRUE)\n",
+        "           OR (:p_is_married = 'No'  AND base.is_married  = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title))\n",
         "),\n",
         "period_agg AS (\n",
         "  SELECT period_start,\n",
@@ -1646,7 +1689,7 @@
         "         is_partial_period,\n",
         "         period_status,\n",
         "         COUNT(DISTINCT character_id)                                                  AS observed_total,\n",
-        "         COUNT(DISTINCT CASE WHEN is_active_in_period     THEN character_id END)       AS active_players,\n",
+        "         COUNT(DISTINCT CASE WHEN is_active_in_period     THEN character_id END)       AS active_characters,\n",
         "         COUNT(DISTINCT CASE WHEN is_active_1d            THEN character_id END)       AS active_1d,\n",
         "         COUNT(DISTINCT CASE WHEN is_active_7d            THEN character_id END)       AS active_7d,\n",
         "         COUNT(DISTINCT CASE WHEN is_active_30d           THEN character_id END)       AS active_30d,\n",
@@ -1680,8 +1723,8 @@
         "       is_partial_period,\n",
         "       period_status,\n",
         "       observed_total,\n",
-        "       active_players,\n",
-        "       ROUND(active_players / observed_total, 6)        AS period_activity_rate,\n",
+        "       active_characters,\n",
+        "       ROUND(active_characters / observed_total, 6)     AS period_activity_rate,\n",
         "       ROUND(active_1d      / observed_total, 6)        AS activity_rate_1d,\n",
         "       ROUND(active_7d      / observed_total, 6)        AS activity_rate_7d,\n",
         "       ROUND(active_30d     / observed_total, 6)        AS activity_rate_30d,\n",
@@ -1729,8 +1772,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1740,8 +1788,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1751,8 +1804,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1777,8 +1835,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1803,8 +1866,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1859,8 +1927,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -1915,8 +1988,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -1950,55 +2028,46 @@
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
         "     AND base.period_status != 'partial_start'\n",
-        "     AND (:p_world_name IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "     AND (:p_location IS NULL\n",
-        "           OR ARRAY_SIZE(:p_location) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "     AND (:p_pvp_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "     AND (:p_premium_only = 'All'\n",
-        "           OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "           OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "     AND (:p_transfer_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "           OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "           OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "     AND (:p_battleye_protected = 'All'\n",
-        "           OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "           OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "     AND (:p_world_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "           OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "           OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "     AND (:p_is_active = 'All'\n",
-        "           OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "           OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "     AND (:p_account_status = 'All'\n",
+        "           OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "           OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "     AND (:p_account_status  = 'All'\n",
         "           OR :p_account_status = base.account_status)\n",
         "     AND (:p_sex = 'All'\n",
         "           OR :p_sex = base.sex)\n",
-        "     AND (:p_vocation IS NULL\n",
-        "           OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation)\n",
-        "           OR (base.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "     AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation))\n",
         "     AND (:p_in_guild = 'All'\n",
-        "           OR (:p_in_guild   = 'Yes' AND base.in_guild   = TRUE)\n",
-        "           OR (:p_in_guild   = 'No'  AND base.in_guild   = FALSE))\n",
+        "           OR (:p_in_guild   = 'Yes' AND base.in_guild    = TRUE)\n",
+        "           OR (:p_in_guild   = 'No'  AND base.in_guild    = FALSE))\n",
         "     AND (:p_owns_house = 'All'\n",
-        "           OR (:p_owns_house = 'Yes' AND base.owns_house = TRUE)\n",
-        "           OR (:p_owns_house = 'No'  AND base.owns_house = FALSE))\n",
+        "           OR (:p_owns_house = 'Yes' AND base.owns_house  = TRUE)\n",
+        "           OR (:p_owns_house = 'No'  AND base.owns_house  = FALSE))\n",
         "     AND (:p_is_married = 'All'\n",
-        "           OR (:p_is_married = 'Yes' AND base.is_married = TRUE)\n",
-        "           OR (:p_is_married = 'No'  AND base.is_married = FALSE))\n",
-        "     AND (:p_loyalty_title IS NULL\n",
-        "           OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title)\n",
-        "           OR (base.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "           OR (:p_is_married = 'Yes' AND base.is_married  = TRUE)\n",
+        "           OR (:p_is_married = 'No'  AND base.is_married  = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title))\n",
         ")\n",
         "SELECT period_start,\n",
         "       loyalty_title,\n",
-        "       COUNT(DISTINCT character_id) AS players\n",
+        "       COUNT(DISTINCT character_id) AS characters\n",
         "  FROM filtered\n",
         " GROUP BY period_start, \n",
         "          loyalty_title\n",
@@ -2028,8 +2097,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2039,8 +2113,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2050,8 +2129,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2076,8 +2160,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2102,8 +2191,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2158,8 +2252,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2214,8 +2313,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -2235,53 +2339,44 @@
         "    ON worlds.world_id = cr.world_id\n",
         " WHERE cr.granularity          = 'Month'\n",
         "   AND cr.cohort_period BETWEEN :date_range.min AND :date_range.max\n",
-        "   AND cr.cohort_period_status IN ('full', 'partial_missing')\n",
-        "   AND cr.observation_period_status IN ('full', 'partial_missing')\n",
-        "   AND (:p_world_name IS NULL\n",
-        "         OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "   AND cr.cohort_period_status IN ('complete', 'partial_missing')\n",
+        "   AND cr.observation_period_status IN ('complete', 'partial_missing')\n",
+        "   AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "   AND (:p_location IS NULL\n",
-        "         OR ARRAY_SIZE(:p_location) = 0 \n",
+        "   AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "   AND (:p_pvp_type IS NULL\n",
-        "         OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "   AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "   AND (:p_premium_only = 'All'\n",
-        "         OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "         OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "   AND (:p_transfer_type IS NULL\n",
-        "         OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "         OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "         OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "   AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "   AND (:p_battleye_protected = 'All'\n",
-        "         OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "         OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "   AND (:p_world_type IS NULL\n",
-        "         OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "         OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "         OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "   AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "   AND (:p_is_active = 'All'\n",
-        "         OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "         OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "   AND (:p_account_status = 'All'\n",
+        "         OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "         OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "   AND (:p_account_status  = 'All'\n",
         "         OR :p_account_status = cr.account_status)\n",
         "   AND (:p_sex = 'All'\n",
         "         OR :p_sex = cr.sex)\n",
-        "   AND (:p_vocation IS NULL\n",
-        "         OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "         OR ARRAY_CONTAINS(:p_vocation, cr.vocation)\n",
-        "         OR (cr.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "   AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "         OR ARRAY_CONTAINS(:p_vocation, cr.vocation))\n",
         "   AND (:p_in_guild = 'All'\n",
-        "         OR (:p_in_guild   = 'Yes' AND cr.in_guild   = TRUE)\n",
-        "         OR (:p_in_guild   = 'No'  AND cr.in_guild   = FALSE))\n",
+        "         OR (:p_in_guild   = 'Yes' AND cr.in_guild    = TRUE)\n",
+        "         OR (:p_in_guild   = 'No'  AND cr.in_guild    = FALSE))\n",
         "   AND (:p_owns_house = 'All'\n",
-        "         OR (:p_owns_house = 'Yes' AND cr.owns_house = TRUE)\n",
-        "         OR (:p_owns_house = 'No'  AND cr.owns_house = FALSE))\n",
+        "         OR (:p_owns_house = 'Yes' AND cr.owns_house  = TRUE)\n",
+        "         OR (:p_owns_house = 'No'  AND cr.owns_house  = FALSE))\n",
         "   AND (:p_is_married = 'All'\n",
-        "         OR (:p_is_married = 'Yes' AND cr.is_married = TRUE)\n",
-        "         OR (:p_is_married = 'No'  AND cr.is_married = FALSE))\n",
-        "   AND (:p_loyalty_title IS NULL\n",
-        "         OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "         OR ARRAY_CONTAINS(:p_loyalty_title, cr.loyalty_title)\n",
-        "         OR (cr.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "         OR (:p_is_married = 'Yes' AND cr.is_married  = TRUE)\n",
+        "         OR (:p_is_married = 'No'  AND cr.is_married  = FALSE))\n",
+        "   AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "         OR ARRAY_CONTAINS(:p_loyalty_title, cr.loyalty_title))\n",
         " GROUP BY cr.cohort_period, \n",
         "          cr.periods_elapsed\n",
         " ORDER BY cr.cohort_period, \n",
@@ -2311,8 +2406,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2322,8 +2422,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2333,8 +2438,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2359,8 +2469,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2385,8 +2500,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2441,8 +2561,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2497,8 +2622,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -2533,53 +2663,44 @@
         "    ON worlds.world_id = cr.world_id\n",
         " WHERE cr.granularity          = 'Month'\n",
         "   AND cr.cohort_period BETWEEN :date_range.min AND :date_range.max\n",
-        "   AND cr.cohort_period_status IN ('full', 'partial_missing')\n",
-        "   AND cr.observation_period_status IN ('full', 'partial_missing')\n",
-        "   AND (:p_world_name IS NULL\n",
-        "         OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "   AND cr.cohort_period_status IN ('complete', 'partial_missing')\n",
+        "   AND cr.observation_period_status IN ('complete', 'partial_missing')\n",
+        "   AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "   AND (:p_location IS NULL\n",
-        "         OR ARRAY_SIZE(:p_location) = 0 \n",
+        "   AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "   AND (:p_pvp_type IS NULL\n",
-        "         OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "   AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "   AND (:p_premium_only = 'All'\n",
-        "         OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "         OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "   AND (:p_transfer_type IS NULL\n",
-        "         OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "         OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "         OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "   AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "   AND (:p_battleye_protected = 'All'\n",
-        "         OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "         OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "   AND (:p_world_type IS NULL\n",
-        "         OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "         OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "         OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "   AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "   AND (:p_is_active = 'All'\n",
-        "         OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "         OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "   AND (:p_account_status = 'All'\n",
+        "         OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "         OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "   AND (:p_account_status  = 'All'\n",
         "         OR :p_account_status = cr.account_status)\n",
         "   AND (:p_sex = 'All'\n",
         "         OR :p_sex = cr.sex)\n",
-        "   AND (:p_vocation IS NULL\n",
-        "         OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "         OR ARRAY_CONTAINS(:p_vocation, cr.vocation)\n",
-        "         OR (cr.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "   AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "         OR ARRAY_CONTAINS(:p_vocation, cr.vocation))\n",
         "   AND (:p_in_guild = 'All'\n",
-        "         OR (:p_in_guild   = 'Yes' AND cr.in_guild   = TRUE)\n",
-        "         OR (:p_in_guild   = 'No'  AND cr.in_guild   = FALSE))\n",
+        "         OR (:p_in_guild   = 'Yes' AND cr.in_guild    = TRUE)\n",
+        "         OR (:p_in_guild   = 'No'  AND cr.in_guild    = FALSE))\n",
         "   AND (:p_owns_house = 'All'\n",
-        "         OR (:p_owns_house = 'Yes' AND cr.owns_house = TRUE)\n",
-        "         OR (:p_owns_house = 'No'  AND cr.owns_house = FALSE))\n",
+        "         OR (:p_owns_house = 'Yes' AND cr.owns_house  = TRUE)\n",
+        "         OR (:p_owns_house = 'No'  AND cr.owns_house  = FALSE))\n",
         "   AND (:p_is_married = 'All'\n",
-        "         OR (:p_is_married = 'Yes' AND cr.is_married = TRUE)\n",
-        "         OR (:p_is_married = 'No'  AND cr.is_married = FALSE))\n",
-        "   AND (:p_loyalty_title IS NULL\n",
-        "         OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "         OR ARRAY_CONTAINS(:p_loyalty_title, cr.loyalty_title)\n",
-        "         OR (cr.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "         OR (:p_is_married = 'Yes' AND cr.is_married  = TRUE)\n",
+        "         OR (:p_is_married = 'No'  AND cr.is_married  = FALSE))\n",
+        "   AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "         OR ARRAY_CONTAINS(:p_loyalty_title, cr.loyalty_title))\n",
         " GROUP BY cr.periods_elapsed, \n",
         "          cohort_dimension\n",
         " ORDER BY cr.periods_elapsed, \n",
@@ -2624,8 +2745,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2635,8 +2761,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2646,8 +2777,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2672,8 +2808,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2698,8 +2839,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2754,8 +2900,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2810,8 +2961,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -2854,51 +3010,42 @@
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
         "     AND base.period_status != 'partial_start'\n",
-        "     AND (:p_world_name IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "     AND (:p_location IS NULL\n",
-        "           OR ARRAY_SIZE(:p_location) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "     AND (:p_pvp_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "     AND (:p_premium_only = 'All'\n",
-        "           OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "           OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "     AND (:p_transfer_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "           OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "           OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "     AND (:p_battleye_protected = 'All'\n",
-        "           OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "           OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "     AND (:p_world_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "           OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "           OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "     AND (:p_is_active = 'All'\n",
-        "           OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "           OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "     AND (:p_account_status = 'All'\n",
+        "           OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "           OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "     AND (:p_account_status  = 'All'\n",
         "           OR :p_account_status = base.account_status)\n",
         "     AND (:p_sex = 'All'\n",
         "           OR :p_sex = base.sex)\n",
-        "     AND (:p_vocation IS NULL\n",
-        "           OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation)\n",
-        "           OR (base.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "     AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation))\n",
         "     AND (:p_in_guild = 'All'\n",
-        "           OR (:p_in_guild   = 'Yes' AND base.in_guild   = TRUE)\n",
-        "           OR (:p_in_guild   = 'No'  AND base.in_guild   = FALSE))\n",
+        "           OR (:p_in_guild   = 'Yes' AND base.in_guild    = TRUE)\n",
+        "           OR (:p_in_guild   = 'No'  AND base.in_guild    = FALSE))\n",
         "     AND (:p_owns_house = 'All'\n",
-        "           OR (:p_owns_house = 'Yes' AND base.owns_house = TRUE)\n",
-        "           OR (:p_owns_house = 'No'  AND base.owns_house = FALSE))\n",
+        "           OR (:p_owns_house = 'Yes' AND base.owns_house  = TRUE)\n",
+        "           OR (:p_owns_house = 'No'  AND base.owns_house  = FALSE))\n",
         "     AND (:p_is_married = 'All'\n",
-        "           OR (:p_is_married = 'Yes' AND base.is_married = TRUE)\n",
-        "           OR (:p_is_married = 'No'  AND base.is_married = FALSE))\n",
-        "     AND (:p_loyalty_title IS NULL\n",
-        "           OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title)\n",
-        "           OR (base.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "           OR (:p_is_married = 'Yes' AND base.is_married  = TRUE)\n",
+        "           OR (:p_is_married = 'No'  AND base.is_married  = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title))\n",
         "),\n",
         "period_agg AS (\n",
         "  SELECT period_start,\n",
@@ -2946,8 +3093,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2957,8 +3109,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2968,8 +3125,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -2994,8 +3156,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3020,8 +3187,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3076,8 +3248,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3132,8 +3309,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -3174,51 +3356,42 @@
         "      ON worlds.world_id = base.world_id\n",
         "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
         "     AND base.period_status != 'partial_start'\n",
-        "     AND (:p_world_name IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        "     AND (:p_location IS NULL\n",
-        "           OR ARRAY_SIZE(:p_location) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_location, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_location, worlds.location))\n",
-        "     AND (:p_pvp_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_pvp_type) = 0 \n",
+        "     AND (ARRAY_CONTAINS(:p_pvp_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_pvp_type, worlds.pvp_type))\n",
         "     AND (:p_premium_only = 'All'\n",
-        "           OR (:p_premium_only   = 'Yes' AND worlds.premium_only   = TRUE)\n",
-        "           OR (:p_premium_only   = 'No'  AND worlds.premium_only   = FALSE))\n",
-        "     AND (:p_transfer_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_transfer_type) = 0 \n",
+        "           OR (:p_premium_only = 'Yes' AND worlds.premium_only = TRUE)\n",
+        "           OR (:p_premium_only = 'No'  AND worlds.premium_only = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_transfer_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_transfer_type, worlds.transfer_type))\n",
         "     AND (:p_battleye_protected = 'All'\n",
-        "           OR (:p_battleye_protected   = 'Yes' AND worlds.battleye_protected   = TRUE)\n",
-        "           OR (:p_battleye_protected   = 'No'  AND worlds.battleye_protected   = FALSE))\n",
-        "     AND (:p_world_type IS NULL\n",
-        "           OR ARRAY_SIZE(:p_world_type) = 0 \n",
+        "           OR (:p_battleye_protected = 'Yes' AND worlds.battleye_protected = TRUE)\n",
+        "           OR (:p_battleye_protected = 'No'  AND worlds.battleye_protected = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_world_type, 'All')\n",
         "           OR ARRAY_CONTAINS(:p_world_type, worlds.world_type))\n",
         "     AND (:p_is_active = 'All'\n",
-        "           OR (:p_is_active   = 'Yes' AND worlds.is_active   = TRUE)\n",
-        "           OR (:p_is_active   = 'No'  AND worlds.is_active   = FALSE))\n",
-        "     AND (:p_account_status = 'All'\n",
+        "           OR (:p_is_active  = 'Yes' AND worlds.is_active = TRUE)\n",
+        "           OR (:p_is_active  = 'No'  AND worlds.is_active = FALSE))\n",
+        "     AND (:p_account_status  = 'All'\n",
         "           OR :p_account_status = base.account_status)\n",
         "     AND (:p_sex = 'All'\n",
         "           OR :p_sex = base.sex)\n",
-        "     AND (:p_vocation IS NULL\n",
-        "           OR ARRAY_SIZE(:p_vocation) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation)\n",
-        "           OR (base.vocation IS NULL AND ARRAY_CONTAINS(:p_vocation, 'No Vocation')))\n",
+        "     AND (ARRAY_CONTAINS(:p_vocation, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_vocation, base.vocation))\n",
         "     AND (:p_in_guild = 'All'\n",
-        "           OR (:p_in_guild   = 'Yes' AND base.in_guild   = TRUE)\n",
-        "           OR (:p_in_guild   = 'No'  AND base.in_guild   = FALSE))\n",
+        "           OR (:p_in_guild   = 'Yes' AND base.in_guild    = TRUE)\n",
+        "           OR (:p_in_guild   = 'No'  AND base.in_guild    = FALSE))\n",
         "     AND (:p_owns_house = 'All'\n",
-        "           OR (:p_owns_house = 'Yes' AND base.owns_house = TRUE)\n",
-        "           OR (:p_owns_house = 'No'  AND base.owns_house = FALSE))\n",
+        "           OR (:p_owns_house = 'Yes' AND base.owns_house  = TRUE)\n",
+        "           OR (:p_owns_house = 'No'  AND base.owns_house  = FALSE))\n",
         "     AND (:p_is_married = 'All'\n",
-        "           OR (:p_is_married = 'Yes' AND base.is_married = TRUE)\n",
-        "           OR (:p_is_married = 'No'  AND base.is_married = FALSE))\n",
-        "     AND (:p_loyalty_title IS NULL\n",
-        "           OR ARRAY_SIZE(:p_loyalty_title) = 0 \n",
-        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title)\n",
-        "           OR (base.loyalty_title IS NULL AND ARRAY_CONTAINS(:p_loyalty_title, 'No Title')))\n",
+        "           OR (:p_is_married = 'Yes' AND base.is_married  = TRUE)\n",
+        "           OR (:p_is_married = 'No'  AND base.is_married  = FALSE))\n",
+        "     AND (ARRAY_CONTAINS(:p_loyalty_title, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_loyalty_title, base.loyalty_title))\n",
         "),\n",
         "period_agg AS (\n",
         "  SELECT period_start,\n",
@@ -3244,7 +3417,7 @@
         "       ROUND(1 - (retained_90d / NULLIF(prev_active_90d, 0)), 6)                 AS churn_rate_90d,\n",
         "       (ev_new + ev_returning)                                                   AS inflow,\n",
         "       -ev_churned                                                               AS outflow,\n",
-        "       (ev_new + ev_returning - ev_churned)                                      AS net_player_growth,\n",
+        "       (ev_new + ev_returning - ev_churned)                                      AS net_character_growth,\n",
         "       ROUND((ev_new + ev_returning) / observed_total, 6)                        AS inflow_rate,\n",
         "       ROUND(-ev_churned / observed_total, 6)                                    AS outflow_rate,\n",
         "       ROUND((ev_new + ev_returning - ev_churned) / observed_total, 6)           AS growth_rate,\n",
@@ -3276,8 +3449,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3287,8 +3465,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3298,8 +3481,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3324,8 +3512,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3350,8 +3543,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3406,8 +3604,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3462,8 +3665,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         }
@@ -3598,8 +3806,7 @@
         "    ON worlds.world_id = chars.world_id\n",
         " WHERE chars.granularity = :p_granularity\n",
         "   AND chars.period_start BETWEEN :date_range.min AND :date_range.max\n",
-        "   AND (:p_world_name IS NULL\n",
-        "         OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "   AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
         "   AND (:p_character_id = 'All' \n",
         "         OR chars.character_id = :p_character_id)\n",
@@ -3646,8 +3853,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3702,8 +3914,7 @@
         " INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
         "    ON worlds.world_id = chars.world_id\n",
         " WHERE chars.snapshot_date BETWEEN :date_range.min AND :date_range.max\n",
-        "   AND (:p_world_name IS NULL\n",
-        "         OR ARRAY_SIZE(:p_world_name) = 0 \n",
+        "   AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
         "         OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
         "   AND (:p_character_id = 'All' \n",
         "         OR chars.character_id = :p_character_id)\n",
@@ -3735,8 +3946,13 @@
           "dataType": "STRING",
           "complexType": "MULTI",
           "defaultSelection": {
-            "operator": {
-              "operator": "AND"
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
             }
           }
         },
@@ -3989,6 +4205,86 @@
         " UNION ALL\n",
         "SELECT 'is_married'"
       ]
+    },
+    {
+      "name": "1451d037",
+      "displayName": "Weekly Character Activity and Lifecycle Insights Dataset",
+      "queryLines": [
+        "WITH base AS (\n",
+        "  SELECT period_start,\n",
+        "         period_end,\n",
+        "         period_status,\n",
+        "         character_id,\n",
+        "         world_id,\n",
+        "         account_status,\n",
+        "         sex,\n",
+        "         vocation,\n",
+        "         is_active_7d,\n",
+        "         is_active_30d,\n",
+        "         LAG(is_active_7d) OVER (PARTITION BY character_id, granularity ORDER BY period_start) AS prev_is_active_7d,\n",
+        "         lifecycle_stage,\n",
+        "         lifecycle_event,\n",
+        "         in_guild,\n",
+        "         owns_house,\n",
+        "         is_married,\n",
+        "         loyalty_title\n",
+        "    FROM tibia_analytics.gold.characters_behavior_periodic\n",
+        "   WHERE granularity = 'Week'\n",
+        "),\n",
+        "filtered AS (\n",
+        "  SELECT base.period_start,\n",
+        "         base.period_end,\n",
+        "         base.character_id,\n",
+        "         base.is_active_7d,\n",
+        "         base.is_active_30d,\n",
+        "         base.prev_is_active_7d,\n",
+        "         base.lifecycle_stage,\n",
+        "         base.lifecycle_event\n",
+        "    FROM base AS base\n",
+        "   INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
+        "      ON worlds.world_id = base.world_id\n",
+        "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
+        "     AND base.period_status != 'partial_start'\n",
+        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
+        "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
+        ")\n",
+        "SELECT * FROM filtered"
+      ],
+      "parameters": [
+        {
+          "displayName": "date_range",
+          "keyword": "date_range",
+          "dataType": "DATE",
+          "complexType": "RANGE",
+          "defaultSelection": {
+            "range": {
+              "dataType": "DATE",
+              "min": {
+                "value": "now/y"
+              },
+              "max": {
+                "value": "now/y"
+              }
+            }
+          }
+        },
+        {
+          "displayName": "p_world_name",
+          "keyword": "p_world_name",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "All"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
   "pages": [
@@ -4001,7 +4297,7 @@
             "name": "925b1170",
             "multilineTextboxSpec": {
               "lines": [
-                "This page provides a high-level overview of the current health of the Tibia community. It summarizes player activity, growth dynamics, engagement, and global progression across all active worlds."
+                "This page provides a high-level overview of the current health of the Tibia community. It summarizes character activity, growth dynamics, engagement, and global progression across all active worlds."
               ],
               "verticalAlign": "VERTICAL_ALIGN_CENTER"
             }
@@ -4101,7 +4397,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "OBSERVED PLAYERS",
+                "title": "OBSERVED CHARACTERS",
                 "showDescription": true,
                 "headerAlignment": "left",
                 "description": "Distinct characters observed during the selected period."
@@ -4155,6 +4451,9 @@
                   },
                   "rowNumber": 2
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -4189,7 +4488,7 @@
                 "showTitle": true,
                 "title": "ACTIVITY RATE 30D",
                 "showDescription": true,
-                "description": "Share of observed players active within the last 30 days.",
+                "description": "Share of observed characters active within the last 30 days.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -4239,6 +4538,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -4273,7 +4575,7 @@
                 "showTitle": true,
                 "title": "RETENTION RATE 7D",
                 "showDescription": true,
-                "description": "Share of players retained from the previous period.",
+                "description": "Share of characters retained from the previous period.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -4324,6 +4626,9 @@
                     "fontSize": 16
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -4344,8 +4649,8 @@
                   "datasetName": "c542b912",
                   "fields": [
                     {
-                      "name": "net_player_growth",
-                      "expression": "`net_player_growth`"
+                      "name": "net_character_growth",
+                      "expression": "`net_character_growth`"
                     }
                   ],
                   "disaggregated": true
@@ -4356,15 +4661,15 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "NET PLAYER GROWTH",
+                "title": "NET CHARACTER GROWTH",
                 "showDescription": true,
-                "description": "New + Returning players minus Churned players.",
+                "description": "New + Returning characters minus Churned characters.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
               "encodings": {
                 "value": {
-                  "fieldName": "net_player_growth",
+                  "fieldName": "net_character_growth",
                   "format": {
                     "type": "number-plain",
                     "abbreviation": "none",
@@ -4396,7 +4701,7 @@
                   }
                 },
                 "target": {
-                  "fieldName": "net_player_growth",
+                  "fieldName": "net_character_growth",
                   "change": {
                     "type": "percent"
                   },
@@ -4413,6 +4718,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -4437,24 +4745,24 @@
                       "expression": "`period_start`"
                     },
                     {
-                      "name": "new_player_rate",
-                      "expression": "`new_player_rate`"
+                      "name": "new_character_rate",
+                      "expression": "`new_character_rate`"
                     },
                     {
-                      "name": "returning_player_rate",
-                      "expression": "`returning_player_rate`"
+                      "name": "returning_character_rate",
+                      "expression": "`returning_character_rate`"
                     },
                     {
-                      "name": "active_player_rate",
-                      "expression": "`active_player_rate`"
+                      "name": "active_character_rate",
+                      "expression": "`active_character_rate`"
                     },
                     {
-                      "name": "dormant_player_rate",
-                      "expression": "`dormant_player_rate`"
+                      "name": "dormant_character_rate",
+                      "expression": "`dormant_character_rate`"
                     },
                     {
-                      "name": "churned_player_rate",
-                      "expression": "`churned_player_rate`"
+                      "name": "churned_character_rate",
+                      "expression": "`churned_character_rate`"
                     }
                   ],
                   "disaggregated": true
@@ -4465,7 +4773,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "PLAYER LIFECYCLE COMPOSITION",
+                "title": "CHARACTER LIFECYCLE COMPOSITION",
                 "showDescription": true,
                 "description": "Changes in lifecycle distribution help reveal shifts in engagement, inactivity and churn."
               },
@@ -4517,23 +4825,23 @@
                   },
                   "fields": [
                     {
-                      "fieldName": "new_player_rate",
+                      "fieldName": "new_character_rate",
                       "displayName": "New"
                     },
                     {
-                      "fieldName": "returning_player_rate",
+                      "fieldName": "returning_character_rate",
                       "displayName": "Returning"
                     },
                     {
-                      "fieldName": "active_player_rate",
+                      "fieldName": "active_character_rate",
                       "displayName": "Active"
                     },
                     {
-                      "fieldName": "dormant_player_rate",
+                      "fieldName": "dormant_character_rate",
                       "displayName": "Dormant"
                     },
                     {
-                      "fieldName": "churned_player_rate",
+                      "fieldName": "churned_character_rate",
                       "displayName": "Churned"
                     }
                   ],
@@ -4562,6 +4870,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -4608,7 +4919,7 @@
                 "showTitle": true,
                 "title": "COMMUNITY SIZE, ACTIVITY AND RETENTION",
                 "showDescription": true,
-                "description": "Player growth is more sustainable when activity and retention remain stable or improve."
+                "description": "Character growth is more sustainable when activity and retention remain stable or improve."
               },
               "mark": {
                 "colors": [
@@ -4673,7 +4984,7 @@
                     "fields": [
                       {
                         "fieldName": "observed_total",
-                        "displayName": "Observed Players"
+                        "displayName": "Observed Characters"
                       }
                     ],
                     "scale": {
@@ -4721,6 +5032,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -4753,8 +5067,8 @@
                       "expression": "`outflow`"
                     },
                     {
-                      "name": "net_player_growth",
-                      "expression": "`net_player_growth`"
+                      "name": "net_character_growth",
+                      "expression": "`net_character_growth`"
                     }
                   ],
                   "disaggregated": true
@@ -4763,6 +5077,12 @@
             ],
             "spec": {
               "version": 1,
+              "frame": {
+                "showTitle": true,
+                "title": "CHARACTER GROWTH AND CHURN",
+                "showDescription": true,
+                "description": "Net growth reflects the balance between character acquisition and churn."
+              },
               "mark": {
                 "layout": "stack",
                 "colors": [
@@ -4798,12 +5118,6 @@
                     "position": 10
                   }
                 ]
-              },
-              "frame": {
-                "showTitle": true,
-                "title": "PLAYER GROWTH AND CHURN",
-                "showDescription": true,
-                "description": "Net growth reflects the balance between player acquisition and churn."
               },
               "widgetType": "combo",
               "encodings": {
@@ -4859,8 +5173,8 @@
                   "secondary": {
                     "fields": [
                       {
-                        "fieldName": "net_player_growth",
-                        "displayName": "Net Player Growth"
+                        "fieldName": "net_character_growth",
+                        "displayName": "Net Character Growth"
                       }
                     ],
                     "scale": {
@@ -4884,6 +5198,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -4907,7 +5224,7 @@
             "name": "34ec13f7",
             "multilineTextboxSpec": {
               "lines": [
-                "This page analyzes how players move through the community lifecycle over time. It highlights acquisition, reactivation, dormancy, churn, and the overall balance between player inflows and outflows."
+                "This page analyzes how characters move through the community lifecycle over time. It highlights acquisition, reactivation, dormancy, churn, and the overall balance between character inflows and outflows."
               ],
               "verticalAlign": "VERTICAL_ALIGN_CENTER"
             }
@@ -5009,7 +5326,7 @@
                 "showTitle": true,
                 "title": "NEW EVENT RATE",
                 "showDescription": true,
-                "description": "Players newly observed this period.",
+                "description": "Characters newly observed this period.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -5059,6 +5376,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -5093,7 +5413,7 @@
                 "showTitle": true,
                 "title": "RETURNING EVENT RATE",
                 "showDescription": true,
-                "description": "Inactive players becoming active again.",
+                "description": "Inactive characters becoming active again.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -5143,6 +5463,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -5177,7 +5500,7 @@
                 "showTitle": true,
                 "title": "CHURNED EVENT RATE",
                 "showDescription": true,
-                "description": "Players transitioning into churn.",
+                "description": "Characters transitioning into churn.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -5228,6 +5551,9 @@
                     "negativeSign": "standard"
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -5252,24 +5578,24 @@
                       "expression": "`period_start`"
                     },
                     {
-                      "name": "new_player_rate",
-                      "expression": "`new_player_rate`"
+                      "name": "new_character_rate",
+                      "expression": "`new_character_rate`"
                     },
                     {
-                      "name": "returning_player_rate",
-                      "expression": "`returning_player_rate`"
+                      "name": "returning_character_rate",
+                      "expression": "`returning_character_rate`"
                     },
                     {
-                      "name": "active_player_rate",
-                      "expression": "`active_player_rate`"
+                      "name": "active_character_rate",
+                      "expression": "`active_character_rate`"
                     },
                     {
-                      "name": "dormant_player_rate",
-                      "expression": "`dormant_player_rate`"
+                      "name": "dormant_character_rate",
+                      "expression": "`dormant_character_rate`"
                     },
                     {
-                      "name": "churned_player_rate",
-                      "expression": "`churned_player_rate`"
+                      "name": "churned_character_rate",
+                      "expression": "`churned_character_rate`"
                     }
                   ],
                   "disaggregated": true
@@ -5282,7 +5608,7 @@
                 "showTitle": true,
                 "title": "COMMUNITY LIFECYCLE COMPOSITION",
                 "showDescription": true,
-                "description": "Shifts toward dormant and churned players may indicate weakening engagement."
+                "description": "Shifts toward dormant and churned characters may indicate weakening engagement."
               },
               "mark": {
                 "colors": [
@@ -5332,23 +5658,23 @@
                   },
                   "fields": [
                     {
-                      "fieldName": "new_player_rate",
+                      "fieldName": "new_character_rate",
                       "displayName": "New"
                     },
                     {
-                      "fieldName": "returning_player_rate",
+                      "fieldName": "returning_character_rate",
                       "displayName": "Returning"
                     },
                     {
-                      "fieldName": "active_player_rate",
+                      "fieldName": "active_character_rate",
                       "displayName": "Active"
                     },
                     {
-                      "fieldName": "dormant_player_rate",
+                      "fieldName": "dormant_character_rate",
                       "displayName": "Dormant"
                     },
                     {
-                      "fieldName": "churned_player_rate",
+                      "fieldName": "churned_character_rate",
                       "displayName": "Churned"
                     }
                   ],
@@ -5376,6 +5702,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -5543,8 +5872,8 @@
                       "expression": "`period_start`"
                     },
                     {
-                      "name": "net_player_growth",
-                      "expression": "`net_player_growth`"
+                      "name": "net_character_growth",
+                      "expression": "`net_character_growth`"
                     },
                     {
                       "name": "growth_rate",
@@ -5557,6 +5886,12 @@
             ],
             "spec": {
               "version": 1,
+              "frame": {
+                "showTitle": true,
+                "title": "NET CHARACTER GROWTH",
+                "showDescription": true,
+                "description": "Positive growth occurs when inflows exceed churn."
+              },
               "mark": {
                 "colors": [
                   "#E4E4E4",
@@ -5595,12 +5930,6 @@
                   }
                 ]
               },
-              "frame": {
-                "showTitle": true,
-                "title": "NET PLAYER GROWTH",
-                "showDescription": true,
-                "description": "Positive growth occurs when inflows exceed churn."
-              },
               "widgetType": "combo",
               "encodings": {
                 "x": {
@@ -5625,8 +5954,8 @@
                   "primary": {
                     "fields": [
                       {
-                        "fieldName": "net_player_growth",
-                        "displayName": "Net Player Growth"
+                        "fieldName": "net_character_growth",
+                        "displayName": "Net Character Growth"
                       }
                     ],
                     "scale": {
@@ -5670,6 +5999,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -5704,7 +6036,7 @@
                 "showTitle": true,
                 "title": "REPLACEMENT RATE",
                 "showDescription": true,
-                "description": "New and returning players per churned player.",
+                "description": "New and returning characters per churned character.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -5757,6 +6089,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -5810,7 +6145,7 @@
               ],
               "frame": {
                 "showTitle": true,
-                "title": "PLAYER REPLACEMENT RATE",
+                "title": "CHARACTER REPLACEMENT RATE",
                 "showDescription": true,
                 "description": "Values above 100% indicate inflows exceed churn."
               },
@@ -5891,6 +6226,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -5932,7 +6270,7 @@
               "frame": {
                 "showTitle": true,
                 "showDescription": true,
-                "title": "PLAYER ACQUISITION AND REACTIVATION",
+                "title": "CHARACTER ACQUISITION AND REACTIVATION",
                 "description": "Higher rates indicate stronger community inflows."
               },
               "mark": {
@@ -6021,6 +6359,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6063,7 +6404,7 @@
                 "showTitle": true,
                 "showDescription": true,
                 "title": "DORMANCY AND CHURN TRENDS",
-                "description": "Rising churn relative to dormancy may indicate accelerating player loss."
+                "description": "Rising churn relative to dormancy may indicate accelerating character loss."
               },
               "mark": {
                 "colors": [
@@ -6151,6 +6492,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6174,7 +6518,7 @@
             "name": "578ee2de",
             "multilineTextboxSpec": {
               "lines": [
-                "This page provides a high-level overview of the current health of the Tibia community. It summarizes player activity, growth dynamics, engagement, and global progression across all active worlds."
+                "This page explores character engagement through activity rates, progression trends, and participation patterns, providing a view of how activity differs across the overall population and its most active segments."
               ],
               "verticalAlign": "VERTICAL_ALIGN_CENTER"
             }
@@ -6276,7 +6620,7 @@
                 "showTitle": true,
                 "title": "Activity Rate 7d",
                 "showDescription": true,
-                "description": "Players active within the last 7 days."
+                "description": "Characters active within the last 7 days."
               },
               "widgetType": "counter",
               "encodings": {
@@ -6321,6 +6665,9 @@
                     "type": "numeric"
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6355,7 +6702,7 @@
                 "showTitle": true,
                 "title": "Activity Rate 30d",
                 "showDescription": true,
-                "description": "Players active within the last 30 days."
+                "description": "Characters active within the last 30 days."
               },
               "widgetType": "counter",
               "encodings": {
@@ -6400,6 +6747,9 @@
                     "type": "numeric"
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6434,7 +6784,7 @@
                 "showTitle": true,
                 "title": "Activity Rate 90d",
                 "showDescription": true,
-                "description": "Players active within the last 90 days."
+                "description": "Characters active within the last 90 days."
               },
               "widgetType": "counter",
               "encodings": {
@@ -6460,7 +6810,7 @@
                         "condition": {
                           "operator": ">="
                         },
-                        "color": "#00CC2B"
+                        "color": "#2BB673"
                       }
                     ]
                   }
@@ -6479,6 +6829,9 @@
                     "type": "numeric"
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6513,7 +6866,7 @@
                 "showTitle": true,
                 "title": "DAU/MAU Stickiness",
                 "showDescription": true,
-                "description": "Share of monthly active players active daily."
+                "description": "Share of monthly active characters active daily."
               },
               "widgetType": "counter",
               "encodings": {
@@ -6558,6 +6911,9 @@
                     "type": "numeric"
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6592,7 +6948,7 @@
                 "showTitle": true,
                 "title": "WAU/MAU Stickiness",
                 "showDescription": true,
-                "description": "Share of monthly active players active weekly."
+                "description": "Share of monthly active characters active weekly."
               },
               "widgetType": "counter",
               "encodings": {
@@ -6637,6 +6993,9 @@
                     "type": "numeric"
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6678,7 +7037,7 @@
               "frame": {
                 "showTitle": true,
                 "showDescription": true,
-                "title": "PLAYER ACTIVITY TRENDS",
+                "title": "CHARACTER ACTIVITY TRENDS",
                 "description": "A widening gap between 30d and 7d activity may signal weakening engagement."
               },
               "mark": {
@@ -6768,6 +7127,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6809,8 +7171,8 @@
               "frame": {
                 "showTitle": true,
                 "showDescription": true,
-                "title": "PLAYER STICKINESS TRENDS",
-                "description": "Higher stickiness indicates players return more frequently."
+                "title": "CHARACTER STICKINESS TRENDS",
+                "description": "Higher stickiness indicates characters return more frequently."
               },
               "mark": {
                 "colors": [
@@ -6898,6 +7260,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -6940,7 +7305,7 @@
                 "showTitle": true,
                 "showDescription": true,
                 "title": "AVERAGE PROGRESSION GROWTH",
-                "description": "Sustained growth suggests continued player investment and activity."
+                "description": "Sustained growth suggests continued character investment and activity."
               },
               "mark": {
                 "colors": [
@@ -7030,6 +7395,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -7071,8 +7439,8 @@
               "frame": {
                 "showTitle": true,
                 "showDescription": true,
-                "title": "AVERAGE PROGRESSION GROWTH (ACTIVE PLAYERS)",
-                "description": "Focuses on progression among players who remain actively engaged."
+                "title": "AVERAGE PROGRESSION GROWTH (ACTIVE CHARACTERS)",
+                "description": "Focuses on progression among characters who remain actively engaged."
               },
               "mark": {
                 "colors": [
@@ -7162,6 +7530,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -7396,8 +7767,8 @@
               "frame": {
                 "showTitle": true,
                 "showDescription": true,
-                "title": "COMMUNITY PROGRESSION PROFILE (ACTIVE PLAYERS)",
-                "description": "Highlights progression patterns among actively engaged players."
+                "title": "COMMUNITY PROGRESSION PROFILE (ACTIVE CHARACTERS)",
+                "description": "Highlights progression patterns among actively engaged characters."
               },
               "widgetType": "combo",
               "encodings": {
@@ -7470,6 +7841,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -7490,8 +7864,8 @@
                   "datasetName": "6c27d41a",
                   "fields": [
                     {
-                      "name": "players",
-                      "expression": "`players`"
+                      "name": "characters",
+                      "expression": "`characters`"
                     },
                     {
                       "name": "period_start",
@@ -7500,11 +7874,6 @@
                     {
                       "name": "loyalty_title",
                       "expression": "`loyalty_title`"
-                    }
-                  ],
-                  "filters": [
-                    {
-                      "expression": "`loyalty_title` IS NOT NULL"
                     }
                   ],
                   "disaggregated": true
@@ -7557,7 +7926,7 @@
                   }
                 },
                 "color": {
-                  "fieldName": "players",
+                  "fieldName": "characters",
                   "legend": {
                     "hideTitle": true,
                     "position": "bottom"
@@ -7582,6 +7951,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -7605,7 +7977,7 @@
             "name": "9b920106",
             "multilineTextboxSpec": {
               "lines": [
-                "This page analyzes how effectively the community retains players over time. It tracks player persistence, churn dynamics, and long-term retention patterns across successive cohorts."
+                "This page analyzes how effectively the community retains characters over time. It tracks character persistence, churn dynamics, and long-term retention patterns across successive cohorts."
               ],
               "verticalAlign": "VERTICAL_ALIGN_CENTER"
             }
@@ -7714,7 +8086,7 @@
               "frame": {
                 "title": "COHORT RETENTION HEATMAP",
                 "showTitle": true,
-                "description": "Reveals how retention evolves across different player cohorts.",
+                "description": "Reveals how retention evolves across different character cohorts.",
                 "showDescription": true,
                 "headerAlignment": "left"
               },
@@ -8015,7 +8387,7 @@
                 "showTitle": true,
                 "title": "RETENTION RATE 30D",
                 "showDescription": true,
-                "description": "Active players retained after 30 days.",
+                "description": "Active characters retained after 30 days.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -8065,6 +8437,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8099,7 +8474,7 @@
                 "showTitle": true,
                 "title": "RETENTION RATE 90D",
                 "showDescription": true,
-                "description": "Active players retained after 90 days.",
+                "description": "Active characters retained after 90 days.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -8149,6 +8524,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8183,7 +8561,7 @@
                 "showTitle": true,
                 "title": "CHURN RATE 30D",
                 "showDescription": true,
-                "description": "Active players lost within 30 days.",
+                "description": "Active characters lost within 30 days.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -8233,6 +8611,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8267,7 +8648,7 @@
                 "showTitle": true,
                 "title": "CHURN RATE 90D",
                 "showDescription": true,
-                "description": "Active players lost within 90 days.",
+                "description": "Active characters lost within 90 days.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -8317,6 +8698,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8359,7 +8743,7 @@
                 "showTitle": true,
                 "showDescription": true,
                 "title": "RETENTION TRENDS",
-                "description": "Higher retention indicates players continue returning over time."
+                "description": "Higher retention indicates characters continue returning over time."
               },
               "mark": {
                 "colors": [
@@ -8448,6 +8832,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8618,7 +9005,7 @@
             "name": "4a51604e",
             "multilineTextboxSpec": {
               "lines": [
-                "This page evaluates the long-term sustainability of the Tibia community. It combines growth, retention, churn, replacement, and activity indicators to assess whether the player base is expanding, stabilizing, or declining over time."
+                "This page evaluates the long-term sustainability of the Tibia community. It combines growth, retention, churn, replacement, and activity indicators to assess whether the character base is expanding, stabilizing, or declining over time."
               ],
               "verticalAlign": "VERTICAL_ALIGN_CENTER"
             }
@@ -8720,7 +9107,7 @@
                 "showTitle": true,
                 "title": "GROWTH RATE",
                 "showDescription": true,
-                "description": "Net player growth relative to community size.",
+                "description": "Net character growth relative to community size.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -8770,6 +9157,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8804,7 +9194,7 @@
                 "showTitle": true,
                 "title": "RETENTION RATE 90D",
                 "showDescription": true,
-                "description": "Active players retained after 90 days.",
+                "description": "Active characters retained after 90 days.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -8854,6 +9244,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8888,7 +9281,7 @@
                 "showTitle": true,
                 "title": "CHURN RATE 90D",
                 "showDescription": true,
-                "description": "Players lost after prolonged inactivity.",
+                "description": "Characters lost after prolonged inactivity.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -8938,6 +9331,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -8976,6 +9372,12 @@
             ],
             "spec": {
               "version": 1,
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": "COMMUNITY GROWTH TRENDS",
+                "description": "Sustainable growth requires both increasing population and positive growth rates."
+              },
               "mark": {
                 "colors": [
                   "#E4E4E4",
@@ -9014,12 +9416,6 @@
                   }
                 ]
               },
-              "frame": {
-                "showTitle": true,
-                "showDescription": true,
-                "title": "COMMUNITY GROWTH TRENDS",
-                "description": "Sustainable growth requires both increasing population and positive growth rates."
-              },
               "widgetType": "combo",
               "encodings": {
                 "x": {
@@ -9046,7 +9442,7 @@
                     "fields": [
                       {
                         "fieldName": "observed_total",
-                        "displayName": "Observed Players"
+                        "displayName": "Observed Characters"
                       }
                     ],
                     "scale": {
@@ -9085,6 +9481,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -9250,7 +9649,7 @@
                 "showTitle": true,
                 "title": "REPLACEMENT RATE",
                 "showDescription": true,
-                "description": "New and returning players per churned player.",
+                "description": "New and returning characters per churned character.",
                 "headerAlignment": "left"
               },
               "widgetType": "counter",
@@ -9300,6 +9699,9 @@
                     }
                   }
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },
@@ -9342,7 +9744,7 @@
                 "showTitle": true,
                 "showDescription": true,
                 "title": "ACTIVITY AND REPLACEMENT DYNAMICS",
-                "description": "Replacement above 100% helps offset player losses and sustain activity levels."
+                "description": "Replacement above 100% helps offset character losses and sustain activity levels."
               },
               "mark": {
                 "colors": [
@@ -9460,6 +9862,9 @@
                 "label": {
                   "show": true
                 }
+              },
+              "data": {
+                "queryName": "main_query"
               }
             }
           },

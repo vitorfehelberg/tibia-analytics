@@ -42,8 +42,7 @@ SELECT chars.granularity,
     ON worlds.world_id = chars.world_id
  WHERE chars.granularity = :p_granularity
    AND chars.period_start BETWEEN :date_range.min AND :date_range.max
-   AND (:p_world_name IS NULL
-         OR ARRAY_SIZE(:p_world_name) = 0 
+   AND (ARRAY_CONTAINS(:p_world_name, 'All')
          OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))
    AND (:p_character_id = 'All' 
          OR chars.character_id = :p_character_id)
