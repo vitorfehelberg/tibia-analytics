@@ -1,6 +1,6 @@
 SELECT DISTINCT
        vocation
-  FROM characters_behavior_periodic
+  FROM tibia_analytics.gold.characters_behavior_periodic
  ORDER BY CASE
             WHEN vocation = 'No Vocation' THEN 0
             ELSE 1
