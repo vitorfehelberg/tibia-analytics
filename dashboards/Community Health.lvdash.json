@@ -4083,20 +4083,18 @@
       ]
     },
     {
-      "name": "f5312a31",
+      "name": "342e6ce0",
       "displayName": "param_vocation",
       "queryLines": [
         "SELECT DISTINCT\n",
         "       vocation\n",
-        "  FROM characters_behavior_periodic\n",
+        "  FROM tibia_analytics.gold.characters_behavior_periodic\n",
         " ORDER BY CASE\n",
         "            WHEN vocation = 'No Vocation' THEN 0\n",
         "            ELSE 1\n",
         "          END,\n",
         "          vocation"
-      ],
-      "catalog": "tibia_analytics",
-      "schema": "gold"
+      ]
     },
     {
       "name": "51daf659",
@@ -4204,86 +4202,6 @@
         "SELECT 'owns_house'\n",
         " UNION ALL\n",
         "SELECT 'is_married'"
-      ]
-    },
-    {
-      "name": "1451d037",
-      "displayName": "Weekly Character Activity and Lifecycle Insights Dataset",
-      "queryLines": [
-        "WITH base AS (\n",
-        "  SELECT period_start,\n",
-        "         period_end,\n",
-        "         period_status,\n",
-        "         character_id,\n",
-        "         world_id,\n",
-        "         account_status,\n",
-        "         sex,\n",
-        "         vocation,\n",
-        "         is_active_7d,\n",
-        "         is_active_30d,\n",
-        "         LAG(is_active_7d) OVER (PARTITION BY character_id, granularity ORDER BY period_start) AS prev_is_active_7d,\n",
-        "         lifecycle_stage,\n",
-        "         lifecycle_event,\n",
-        "         in_guild,\n",
-        "         owns_house,\n",
-        "         is_married,\n",
-        "         loyalty_title\n",
-        "    FROM tibia_analytics.gold.characters_behavior_periodic\n",
-        "   WHERE granularity = 'Week'\n",
-        "),\n",
-        "filtered AS (\n",
-        "  SELECT base.period_start,\n",
-        "         base.period_end,\n",
-        "         base.character_id,\n",
-        "         base.is_active_7d,\n",
-        "         base.is_active_30d,\n",
-        "         base.prev_is_active_7d,\n",
-        "         base.lifecycle_stage,\n",
-        "         base.lifecycle_event\n",
-        "    FROM base AS base\n",
-        "   INNER JOIN tibia_analytics.gold.worlds AS worlds\n",
-        "      ON worlds.world_id = base.world_id\n",
-        "   WHERE base.period_start BETWEEN :date_range.min AND :date_range.max\n",
-        "     AND base.period_status != 'partial_start'\n",
-        "     AND (ARRAY_CONTAINS(:p_world_name, 'All')\n",
-        "           OR ARRAY_CONTAINS(:p_world_name, worlds.world_name))\n",
-        ")\n",
-        "SELECT * FROM filtered"
-      ],
-      "parameters": [
-        {
-          "displayName": "date_range",
-          "keyword": "date_range",
-          "dataType": "DATE",
-          "complexType": "RANGE",
-          "defaultSelection": {
-            "range": {
-              "dataType": "DATE",
-              "min": {
-                "value": "now/y"
-              },
-              "max": {
-                "value": "now/y"
-              }
-            }
-          }
-        },
-        {
-          "displayName": "p_world_name",
-          "keyword": "p_world_name",
-          "dataType": "STRING",
-          "complexType": "MULTI",
-          "defaultSelection": {
-            "values": {
-              "dataType": "STRING",
-              "values": [
-                {
-                  "value": "All"
-                }
-              ]
-            }
-          }
-        }
       ]
     }
   ],
@@ -12786,9 +12704,9 @@
             "name": "vocations",
             "queries": [
               {
-                "name": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15a0269b71c0fbacb5383b65c5534_vocation",
+                "name": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706e15701beb8a091412e7501e2f_vocation",
                 "query": {
-                  "datasetName": "f5312a31",
+                  "datasetName": "342e6ce0",
                   "fields": [
                     {
                       "name": "vocation",
@@ -12803,7 +12721,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f153c93d5215c49c76631cf3e84de0_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412d29298abaf593a93d2_p_vocation",
                 "query": {
                   "datasetName": "c542b912",
                   "parameters": [
@@ -12816,7 +12734,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15483017d11bfb69cf445cdbc6bb1_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412d594de71c6ed76b300_p_vocation",
                 "query": {
                   "datasetName": "a871f39b",
                   "parameters": [
@@ -12829,7 +12747,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1548c5eea1db8b3ca3cdf2e83382b_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412d99cc834d7a1af7858_p_vocation",
                 "query": {
                   "datasetName": "f23c4b74",
                   "parameters": [
@@ -12842,7 +12760,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154a8840c10d3b7a821f88f1ab4dd_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412dca27dd829fdc4057e_p_vocation",
                 "query": {
                   "datasetName": "6c27d41a",
                   "parameters": [
@@ -12855,7 +12773,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f144a1c40b1fef95a346a58e4682d9_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412dfa2702380c6badd0c_p_vocation",
                 "query": {
                   "datasetName": "8da057bf",
                   "parameters": [
@@ -12868,7 +12786,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412e2a360f96f916246d7_p_vocation",
                 "query": {
                   "datasetName": "394ae852",
                   "parameters": [
@@ -12881,7 +12799,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154d1da3f13b0ba6a3919bd1e178f_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412e5b0365bec656e817a_p_vocation",
                 "query": {
                   "datasetName": "9e051a46",
                   "parameters": [
@@ -12894,7 +12812,7 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1554e9a731f1cb0ce6bd93c523913_p_vocation",
+                "name": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412e983a85724abb0e97a_p_vocation",
                 "query": {
                   "datasetName": "d3918c8b",
                   "parameters": [
@@ -12932,39 +12850,39 @@
                 "fields": [
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f153c93d5215c49c76631cf3e84de0_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412d29298abaf593a93d2_p_vocation"
                   },
                   {
                     "fieldName": "vocation",
-                    "queryName": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15a0269b71c0fbacb5383b65c5534_vocation"
+                    "queryName": "dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706e15701beb8a091412e7501e2f_vocation"
                   },
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f15483017d11bfb69cf445cdbc6bb1_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412d594de71c6ed76b300_p_vocation"
                   },
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1548c5eea1db8b3ca3cdf2e83382b_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412d99cc834d7a1af7858_p_vocation"
                   },
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154a8840c10d3b7a821f88f1ab4dd_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412dca27dd829fdc4057e_p_vocation"
                   },
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f144a1c40b1fef95a346a58e4682d9_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412dfa2702380c6badd0c_p_vocation"
                   },
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1463c5bec1b3cad63358400e792cd_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412e2a360f96f916246d7_p_vocation"
                   },
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f154d1da3f13b0ba6a3919bd1e178f_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412e5b0365bec656e817a_p_vocation"
                   },
                   {
                     "parameterName": "p_vocation",
-                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1554e9a731f1cb0ce6bd93c523913_p_vocation"
+                    "queryName": "parameter_dashboards/01f1449c1dcc1ef285c72e6d45af2a39/datasets/01f1706d9c5412e983a85724abb0e97a_p_vocation"
                   }
                 ]
               }
