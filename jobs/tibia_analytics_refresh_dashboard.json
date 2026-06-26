@@ -1,0 +1,30 @@
+{
+  "name": "tibia_analytics_refresh_dashboard",
+  "description": "Refreshes the Lakeview Community Health dashboard after successful pipeline execution.",
+  "email_notifications": {
+    "no_alert_for_skipped_runs": false
+  },
+  "webhook_notifications": {},
+  "timeout_seconds": 0,
+  "max_concurrent_runs": 1,
+  "tasks": [
+    {
+      "task_key": "refresh_community_health",
+      "run_if": "ALL_SUCCESS",
+      "dashboard_task": {
+        "subscription": {
+          "paused": false
+        },
+        "warehouse_id": "<REPLACE_WITH_WAREHOUSE_ID>",
+        "dashboard_id": "<REPLACE_WITH_DASHBOARD_ID>"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "disabled": false
+    }
+  ],
+  "queue": {
+    "enabled": true
+  },
+  "performance_target": "PERFORMANCE_OPTIMIZED"
+}
