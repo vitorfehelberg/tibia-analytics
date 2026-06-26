@@ -61,7 +61,7 @@ The platform supports analytical questions such as:
 
 ## Architecture
 
-The project follows a Databricks-based Medallion architecture designed to separate raw data ingestion, historical modeling, and analytical consumption. Data flows through Bronze, Silver, and Gold layers, where each layer has a specific responsibility: preserving source data, creating reliable historical entities, and providing optimized datasets for analytics and dashboards.
+The project follows a Databricks-based Medallion architecture designed to separate raw data ingestion, historical modeling, and analytical consumption. Data flows through Bronze, Silver, and Gold layers, where each layer has a specific responsibility: preserving source data, creating reliable historical entities, and providing optimized datasets for analytics and dashboards. Analytical datasets produced in the Gold layer are automatically published through a Lakeview dashboard refreshed as the final step of the orchestration workflow.
 
 ### Data Flow
 
@@ -96,14 +96,15 @@ Provides analytical datasets used by the dashboard and other analytical workload
 
 ### Summary
 
-| Metric                    | Value       |
-|---------------------------|-------------|
-| Worlds monitored          | 90+         |
-| Unique characters tracked | 105k+       |
-| Total historical rows     | 12M+        |
-| Data size                 | 5GB+        |
-| Daily pipeline runtime    | ~75 min ¹   |
-| Daily rows ingested       | 105k+       |
+| Metric                                | Value       |
+|---------------------------------------|-------------|
+| Worlds monitored                      | 90+         |
+| Unique characters tracked             | 105k+       |
+| Total historical records (Gold layer) | 12M+        |
+| Data size                             | 5GB+        |
+| Daily ingestion volume (Bronze layer) | 105k+       |
+| Daily pipeline runtime                | ~75 min ¹   |
+| Dashboard refresh                     | Automatic   |
 
 _**¹** ~60 minutes are spent on character ingestion, constrained by a rate limit of 32 requests/second._
 
@@ -239,7 +240,7 @@ The pipeline also includes validation checks across Bronze and Silver layers to 
 
 ## Deployment
 
-The pipeline is orchestrated through Databricks Jobs, with task dependencies controlling the execution order between ingestion, data quality validation, Silver transformations, and Gold processing. Each step only runs after its upstream dependencies complete successfully, preventing incomplete data from propagating through the pipeline.
+The pipeline is orchestrated through Databricks Jobs, with task dependencies controlling the execution order between ingestion, data quality validation, Silver transformations, Gold processing, and Lakeview dashboard refresh. Each step only runs after its upstream dependencies complete successfully, preventing incomplete data from propagating through the pipeline.
 
 ### Prerequisites
 Before deploying this project, ensure you have:
@@ -250,13 +251,14 @@ Before deploying this project, ensure you have:
 - A Git folder (Databricks Repos) connected to this repository.
 
 ### Importing the jobs
-This repository includes three Databricks job definitions under `jobs/`:
+This repository includes four Databricks job definitions under `jobs/`:
 
-| File                                    | Description                                         |
-|-----------------------------------------|-----------------------------------------------------|
-| `tibia_analytics_schema_bootstrap.json` | Creates catalogs, schemas, and all tables           |
-| `tibia_analytics_data_ingestion.json`   | Runs the full ingestion and transformation pipeline |
-| `tibia_analytics.json`                  | Orchestrator — runs the two jobs above in sequence  |
+| File                                     | Description                                                            |
+|------------------------------------------|------------------------------------------------------------------------|
+| `tibia_analytics.json`                   | Main orchestrator responsible for coordinating the platform workflows. |
+| `tibia_analytics_schema_bootstrap.json`  | Creates catalogs, schemas, tables, and supporting database objects.    |
+| `tibia_analytics_data_ingestion.json`    | Runs the full ingestion and transformation pipeline.                   |
+| `tibia_analytics_refresh_dashboard.json` | Refreshes the Lakeview dashboard after successful pipeline execution.  |
 
 Jobs must be created in sequence because the orchestrator references the job IDs generated during creation.
 
@@ -265,6 +267,7 @@ Create the dependency jobs first and capture the returned `job_id` values:
 ```bash
 databricks jobs create --json @jobs/tibia_analytics_schema_bootstrap.json
 databricks jobs create --json @jobs/tibia_analytics_data_ingestion.json
+databricks jobs create --json @jobs/tibia_analytics_refresh_dashboard.json
 ```
 Update the orchestrator configuration with the generated IDs, then create it:
 ```bash
@@ -278,15 +281,17 @@ Jobs can also be created manually in the Databricks workspace:
 - Configure tasks based on the JSON definitions in this repository.
 
 ### Required Configuration
-Before running the orchestrator, replace the following placeholders in `jobs/tibia_analytics.json`:
+Before running the jobs, replace the following placeholders in the respective job configuration files:
 
-| Placeholder                              | Where to find it                                                           |
-|------------------------------------------|----------------------------------------------------------------------------|
-| `<REPLACE_WITH_YOUR_EMAIL>`              | Email address used for job failure notifications                           |
-| `<REPLACE_WITH_SCHEMA_BOOTSTRAP_JOB_ID>` | Job ID returned after creating the schema bootstrap job                    |
-| `<REPLACE_WITH_DATA_INGESTION_JOB_ID>`   | Job ID returned after creating the data ingestion job                      |
-| `<REPLACE_WITH_QUERY_ID>`                | SQL query ID (visible in the SQL Editor URL under `queries/...`)           |
-| `<REPLACE_WITH_WAREHOUSE_ID>`            | SQL Warehouse ID (found in the warehouse connection details)               |
+| Placeholder                               | Description                                                                |
+|-------------------------------------------|----------------------------------------------------------------------------|
+| `<REPLACE_WITH_YOUR_EMAIL>`               | Email address used for job failure notifications.                          |
+| `<REPLACE_WITH_SCHEMA_BOOTSTRAP_JOB_ID>`  | Job ID returned after creating the schema bootstrap job.                   |
+| `<REPLACE_WITH_DATA_INGESTION_JOB_ID>`    | Job ID returned after creating the data ingestion job.                     |
+| `<REPLACE_WITH_REFRESH_DASHBOARD_JOB_ID>` | Job ID returned after creating the refresh dashboard job.                  |
+| `<REPLACE_WITH_DASHBOARD_ID>`             | Dashboard ID (visible in the Lakeview dashboard URL as `dashboardsv3/..`). |
+| `<REPLACE_WITH_QUERY_ID>`                 | SQL query ID (visible in the SQL Editor URL under `queries/...`).          |
+| `<REPLACE_WITH_WAREHOUSE_ID>`             | SQL Warehouse ID (found in the warehouse connection details).              |
 
 ### Schedule
 
@@ -299,7 +304,7 @@ The bootstrap job is idempotent and safe to re-run. This project currently uses 
 
 ### Exploring the Project
 
-Once the pipeline has run at least once, the Gold layer tables are available in the Unity Catalog under `tibia_analytics.gold`. The easiest entry point is the Databricks SQL editor — `characters_behavior_periodic` and `cohort_retention` are the two main analytical tables. The Community Health dashboard provides a pre-built view across all six analytical sections. For data quality inspection, the queries under `queries/` include audit scripts that report coverage and missing period rates per ingestion date.
+Once the pipeline has run at least once, the Gold layer tables are available in the Unity Catalog under `tibia_analytics.gold`. The easiest entry point is the Databricks SQL editor — `characters_behavior_periodic` and `cohort_retention` are the two main analytical tables. The Community Health dashboard is automatically refreshed after successful pipeline execution, providing an up-to-date analytical view across all six analytical sections. For data quality inspection, the queries under `queries/` include audit scripts that report coverage and missing period rates per ingestion date.
 
 ## Current Limitations
 
@@ -313,7 +318,7 @@ Once the pipeline has run at least once, the Gold layer tables are available in 
 - Replace the current full refresh pattern in `characters_behavior_periodic` and `cohort_retention` with incremental processing. These tables currently rely on `TRUNCATE + INSERT`, which can leave the target table temporarily incomplete if a pipeline execution fails during processing and prevents partial results from being published as the latest state. 
 - Add schema validation at the Bronze layer to detect upstream API changes earlier. New or renamed fields currently depend on downstream transformations failing before the issue becomes visible.
 - Introduce Asset Bundles (YAML-based definitions) to replace the current CLI deployment workflow, improving reproducibility and enabling easier promotion across deployment environments.
-- Expose curated datasets for external BI consumption, allowing analytical users to connect directly to the Gold layer without depending on the dashboard layer.
+- Expose curated Gold layer datasets for external consumption through BI tools, public dashboards, or other analytical applications, reducing dependency on Databricks dashboards.
 
 ## License
 

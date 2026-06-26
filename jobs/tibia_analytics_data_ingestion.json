@@ -1,5 +1,6 @@
 {
   "name": "tibia_analytics_data_ingestion",
+  "description": "Executes the complete data pipeline across Bronze, Silver, and Gold layers, including API ingestion, transformations, and data quality checks.",
   "email_notifications": {
     "no_alert_for_skipped_runs": false
   },

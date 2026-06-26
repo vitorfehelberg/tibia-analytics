@@ -1,5 +1,6 @@
 {
   "name": "tibia_analytics",
+  "description": "Main orchestrator that coordinates the execution of schema bootstrap, data ingestion, and dashboard refresh workflows.",
   "email_notifications": {
     "no_alert_for_skipped_runs": true,
     "on_failure": ["<REPLACE_WITH_YOUR_EMAIL>"]
@@ -31,6 +32,20 @@
       ],
       "run_job_task": {
         "job_id": "<REPLACE_WITH_DATA_INGESTION_JOB_ID>"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {}
+    },
+    {
+      "task_key": "refresh_dashboard",
+      "depends_on": [
+        {
+          "task_key": "data_ingestion"
+        }
+      ],
+      "run_job_task": {
+        "job_id": "<REPLACE_WITH_REFRESH_DASHBOARD_JOB_ID>"
       },
       "timeout_seconds": 0,
       "email_notifications": {},
